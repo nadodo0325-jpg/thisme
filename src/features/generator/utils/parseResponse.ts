@@ -1,19 +1,23 @@
-export function parseResponse(result: string) {
+export function parseResponse(
+  raw: string
+) {
 
-  const lines = result.split("\n");
+  const clean =
+    raw.replace(/\*\*/g, "");
 
-  const title =
-    lines.find((line) =>
-      line.includes("版本：")
-    ) || "";
+  const titleMatch =
+    clean.match(/版本[:：]\s*(.+)/);
 
-  const text =
-    lines.find((line) =>
-      line.includes("句子：")
-    ) || "";
+  const textMatch =
+    clean.match(/句子[:：]\s*([\s\S]+)/);
 
   return {
-    title: title.replace("版本：", "").trim(),
-    text: text.replace("句子：", "").trim(),
+    title:
+      titleMatch?.[1]?.trim() ||
+      "無法定義的人",
+
+    text:
+      textMatch?.[1]?.trim() ||
+      "有些情緒，連 AI 都說不清。",
   };
 }

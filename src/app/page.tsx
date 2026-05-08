@@ -35,7 +35,7 @@ export default function HomePage() {
   const [loading, setLoading] =
     useState(false);
 
-  // 新增：AI 模式
+  // AI 模式
   const [mode, setMode] =
     useState("love");
 
@@ -87,8 +87,6 @@ export default function HomePage() {
 
           body: JSON.stringify({
             input,
-
-            // 新增：傳送模式
             mode,
           }),
         });
@@ -228,19 +226,27 @@ ${current.text}`;
 
         {/* Loading */}
         {loading && (
-          <p className="mt-6 text-zinc-500 animate-pulse">
-            AI 正在分析你的靈魂中...
-          </p>
+          <div className="mt-6 flex items-center gap-3 text-zinc-400">
+
+            <div className="h-2 w-2 animate-pulse rounded-full bg-purple-400" />
+
+            <p>
+              AI 正在拆解你的情緒...
+            </p>
+
+          </div>
         )}
 
         {/* Story */}
-        <div className="mt-8 w-full flex justify-center">
+        <div className="mt-10 w-full flex justify-center">
+
           <StoryCard
             ref={cardRef}
             title={current.title}
             text={current.text}
             template={template}
           />
+
         </div>
 
         {/* Actions */}
@@ -258,9 +264,11 @@ ${current.text}`;
 
         {/* History */}
         <div className="w-full mt-10">
+
           <HistoryList
             items={history}
           />
+
         </div>
 
       </div>
