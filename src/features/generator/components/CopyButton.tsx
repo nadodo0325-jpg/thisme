@@ -1,3 +1,9 @@
+"use client";
+
+import {
+  useState,
+} from "react";
+
 type Props = {
   text: string;
 };
@@ -6,7 +12,10 @@ export default function CopyButton({
   text,
 }: Props) {
 
-  const copyText = async () => {
+  const [copied, setCopied] =
+    useState(false);
+
+  const handleCopy = async () => {
 
     try {
 
@@ -14,7 +23,11 @@ export default function CopyButton({
         text
       );
 
-      alert("已複製文案");
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
 
     } catch (error) {
 
@@ -23,13 +36,28 @@ export default function CopyButton({
   };
 
   return (
-
     <button
-      onClick={copyText}
-      className="bg-white text-black px-6 py-3 rounded-2xl font-medium hover:opacity-90 transition"
+      onClick={handleCopy}
+      className={`
+        rounded-2xl
+        px-5
+        py-3
+        font-semibold
+        transition-all
+        duration-200
+        active:scale-95
+        ${
+          copied
+            ? "bg-green-500 text-white"
+            : "bg-white/10 text-white hover:bg-white/20"
+        }
+      `}
     >
-      複製文案
-    </button>
 
+      {copied
+        ? "已複製分享文案"
+        : "複製分享文案"}
+
+    </button>
   );
 }

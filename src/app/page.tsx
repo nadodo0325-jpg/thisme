@@ -143,7 +143,12 @@ export default function HomePage() {
       await htmlToImage.toPng(
         cardRef.current,
         {
-          pixelRatio: 2,
+          pixelRatio: 3,
+
+          cacheBust: true,
+
+          backgroundColor:
+            "#0F172A",
         }
       );
 

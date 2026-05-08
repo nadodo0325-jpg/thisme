@@ -41,8 +41,8 @@ const StoryCard = forwardRef<
       ref={ref}
       className={`
         relative
-        w-[340px]
-        h-[600px]
+        w-[360px]
+        h-[640px]
         overflow-hidden
         rounded-[36px]
         bg-gradient-to-br

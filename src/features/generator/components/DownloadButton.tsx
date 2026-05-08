@@ -7,13 +7,21 @@ export default function DownloadButton({
 }: Props) {
 
   return (
-
     <button
       onClick={onClick}
-      className="bg-zinc-900 border border-zinc-700 text-zinc-200 px-6 py-3 rounded-2xl hover:bg-zinc-800 transition"
+      className="
+        rounded-2xl
+        bg-white
+        px-5
+        py-3
+        font-semibold
+        text-black
+        transition-all
+        hover:scale-105
+        active:scale-95
+      "
     >
-      下載 Story
+      下載 IG 圖卡
     </button>
-
   );
 }
