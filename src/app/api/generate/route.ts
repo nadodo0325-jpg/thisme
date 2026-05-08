@@ -84,8 +84,21 @@ const randomStyles = [
   "像在逞強的人",
   "像喝醉後才敢承認",
   "像很久沒被理解的人",
-  "像情緒快爛掉的人",
   "像表面沒事其實有事",
+  "像不敢承認自己在難過",
+  "像一個快撐不住的人",
+  "像戀愛失敗後的清醒",
+  "像在假裝沒事的人",
+  "像情緒已讀不回",
+];
+
+const randomPersonalityRules = [
+  "人格名稱要像會爆紅的測驗名稱",
+  "人格名稱要讓人想截圖分享",
+  "人格名稱要像 Threads 熱門人格",
+  "人格名稱要有情緒感",
+  "人格名稱不要普通",
+  "人格名稱要有記憶點",
 ];
 
 export async function POST(req: Request) {
@@ -101,12 +114,19 @@ export async function POST(req: Request) {
     const mode =
       body.mode || "love";
 
-    // 隨機風格
     const randomStyle =
       randomStyles[
         Math.floor(
           Math.random() *
           randomStyles.length
+        )
+      ];
+
+    const randomRule =
+      randomPersonalityRules[
+        Math.floor(
+          Math.random() *
+          randomPersonalityRules.length
         )
       ];
 
@@ -116,10 +136,23 @@ ${modePrompts[mode]}
 額外風格：
 ${randomStyle}
 
-請根據使用者輸入，
-生成一份 AI 人格報告。
+額外規則：
+${randomRule}
 
-規則：
+請根據使用者輸入，
+生成一份「超有分享感」的 AI 人格報告。
+
+核心目標：
+
+這份結果要讓使用者：
+- 想截圖
+- 想分享到 IG 限動
+- 想發 Threads
+- 覺得超準
+- 覺得被看穿
+- 想給朋友測
+
+風格規則：
 
 - 要像真人
 - 不要像 ChatGPT
@@ -127,11 +160,25 @@ ${randomStyle}
 - 不要太正能量
 - 可以有點狠
 - 可以帶情緒
+- 可以像迷因
+- 可以像戀愛腦
+- 可以像被看穿
 - 要像 Threads 文案
 - 每次都要不一樣
 - 不要重複句型
 - 不要解釋
 - 不要加引號
+- 不要太長
+- 一句話要有 punch
+- 不要使用老套雞湯
+
+重要：
+
+1. 人格名稱一定要強
+2. 三個欄位要有不同角度
+3. 不要三段都很像
+4. 每段都要有情緒
+5. 可以短，但要有力
 
 輸出格式必須完全照下面：
 
@@ -162,11 +209,15 @@ ${randomStyle}
           },
         ],
 
-        temperature: 1.3,
+        temperature: 1.4,
 
         top_p: 0.95,
 
-        max_tokens: 220,
+        frequency_penalty: 0.8,
+
+        presence_penalty: 0.7,
+
+        max_tokens: 260,
       });
 
     const text =

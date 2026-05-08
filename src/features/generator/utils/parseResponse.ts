@@ -1,41 +1,59 @@
 export function parseResponse(
-  raw: string
+  text: string
 ) {
 
-  const clean =
-    raw.replace(/\*\*/g, "");
+  // 統一換行
+  const cleaned =
+    text.replace(/\r/g, "");
 
-  const getValue = (
+  // 通用抓取函式
+  const extract = (
     label: string
   ) => {
 
-    const regex = new RegExp(
-      `${label}[:：]\\s*([\\s\\S]*?)(?=\\n[A-Za-z\u4e00-\u9fa5]+[:：]|$)`
-    );
+    const regex =
+      new RegExp(
+        `${label}[：:]\\s*([\\s\\S]*?)(?=\\n[A-Za-z\u4e00-\u9fa5]+[：:]|$)`
+      );
+
+    const match =
+      cleaned.match(regex);
 
     return (
-      clean.match(regex)?.[1]
-        ?.trim() || ""
+      match?.[1]
+        ?.trim()
+        ?.replace(/\n/g, " ") ||
+      ""
     );
   };
 
-  return {
+  const title =
+    extract("人格");
 
+  const love =
+    extract("戀愛狀態");
+
+  const dark =
+    extract("黑暗面");
+
+  const friends =
+    extract("朋友眼中的你");
+
+  return {
     title:
-      getValue("人格") ||
-      "無法定義的人",
+      title ||
+      "情緒觀察者",
 
     love:
-      getValue("戀愛狀態") ||
-      "有些情緒，沒有答案。",
+      love ||
+      "你總是比別人更容易投入。",
 
     dark:
-      getValue("黑暗面") ||
-      "你只是太習慣忍耐。",
+      dark ||
+      "你習慣把情緒藏起來。",
 
     friends:
-      getValue("朋友眼中的你") ||
-      "有些人其實很懂你。",
-
+      friends ||
+      "大家其實比你想像中更懂你。",
   };
 }

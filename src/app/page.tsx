@@ -39,6 +39,7 @@ export default function HomePage() {
   const [mode, setMode] =
     useState("love");
 
+  // 保留模板系統（未來可擴充）
   const [template, setTemplate] =
     useState<keyof typeof templates>("dark");
 
@@ -246,17 +247,21 @@ ${current.friends}
 
         {/* Generate */}
         <div className="w-full mt-5">
+
           <GenerateButton
             onClick={generateVersion}
           />
+
         </div>
 
         {/* Template */}
         <div className="mt-6">
+
           <TemplateSelector
             current={template}
             onChange={setTemplate}
           />
+
         </div>
 
         {/* Loading */}
@@ -281,7 +286,10 @@ ${current.friends}
             love={current.love}
             dark={current.dark}
             friends={current.friends}
-            template={template}
+
+            // STEP 21：
+            // mode 控制人格卡主題
+            template={mode}
           />
 
         </div>
