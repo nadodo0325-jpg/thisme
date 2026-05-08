@@ -20,6 +20,7 @@ const modePrompts: Record<
 - 有戀愛腦感
 - 有點脆弱
 - 不要太正能量
+- 有被愛焦慮感
 `,
 
   dark: `
@@ -33,6 +34,7 @@ const modePrompts: Record<
 - 像 Threads 迷因
 - 有現實感
 - 不要雞湯
+- 像看透人性
 `,
 
   mbti: `
@@ -44,6 +46,7 @@ const modePrompts: Record<
 - 有點心理學
 - 有高敏感感
 - 不要太正式
+- 像很會觀察朋友的人
 `,
 
   pastlife: `
@@ -55,6 +58,7 @@ const modePrompts: Record<
 - 微中二
 - 有宿命感
 - 像命運解析
+- 像前世記憶
 `,
 
   friends: `
@@ -66,6 +70,7 @@ const modePrompts: Record<
 - 有點狠
 - 有點暖
 - 很像熟人吐槽
+- 像認識很久的人
 `,
 
   roast: `
@@ -78,6 +83,7 @@ const modePrompts: Record<
 - 像迷因留言區
 - 不要客氣
 - 要有 punch
+- 像留言區神回覆
 `,
 };
 
@@ -98,6 +104,8 @@ const randomStyles = [
   "像情緒已讀不回",
   "像快把情緒藏不住的人",
   "像習慣偷偷內耗的人",
+  "像戀愛裡最累的那種人",
+  "像總是在等別人回訊息的人",
 ];
 
 const randomPersonalityRules = [
@@ -109,6 +117,8 @@ const randomPersonalityRules = [
   "人格名稱要有記憶點",
   "人格名稱要像社群流行標籤",
   "人格名稱要像戀愛人格分類",
+  "人格名稱要像年輕人會轉發的東西",
+  "人格名稱要像熱門心理測驗",
 ];
 
 const randomTagStyles = [
@@ -119,6 +129,17 @@ const randomTagStyles = [
   "#愛逃避的人 #情緒觀察者",
   "#戀愛型人格 #高共感",
   "#脆弱系人格 #深夜情緒",
+  "#情緒內耗 #玻璃心人格",
+  "#容易心軟 #想太多人格",
+];
+
+const viralExamples = [
+  "已讀不回型戀愛腦",
+  "假裝不在意的人格",
+  "高敏感嘴硬人格",
+  "情緒失蹤型人格",
+  "半夜內耗觀察者",
+  "戀愛裡最會自我消耗的人",
 ];
 
 export async function POST(req: Request) {
@@ -158,6 +179,14 @@ export async function POST(req: Request) {
         )
       ];
 
+    const viralReference =
+      viralExamples[
+        Math.floor(
+          Math.random() *
+          viralExamples.length
+        )
+      ];
+
     const systemPrompt = `
 ${modePrompts[mode]}
 
@@ -166,6 +195,9 @@ ${randomStyle}
 
 額外規則：
 ${randomRule}
+
+熱門人格參考：
+${viralReference}
 
 請根據使用者輸入，
 生成一份「超有分享感」的 AI 人格報告。
@@ -179,6 +211,17 @@ ${randomRule}
 - 覺得超準
 - 覺得被看穿
 - 想給朋友測
+- 想收藏
+- 想重測
+
+平台感規則：
+
+- 像熱門人格平台
+- 像社群爆紅人格
+- 像會在 Threads 出現
+- 像 IG 心理測驗
+- 要有病毒感
+- 要有情緒記憶點
 
 風格規則：
 
@@ -200,6 +243,7 @@ ${randomRule}
 - 一句話要有 punch
 - 不要使用老套雞湯
 - 要有社群病毒感
+- 不要像 AI 寫作文
 
 重要：
 
@@ -210,6 +254,8 @@ ${randomRule}
 5. 可以短，但要有力
 6. 要像真的很懂這個人
 7. 標籤要像社群熱門人格 tag
+8. 人格名稱要像會流行
+9. 內容要有「被講中」感
 
 標籤風格參考：
 ${randomTags}
@@ -245,15 +291,15 @@ ${randomTags}
           },
         ],
 
-        temperature: 1.45,
+        temperature: 1.5,
 
         top_p: 0.95,
 
-        frequency_penalty: 0.9,
+        frequency_penalty: 1,
 
-        presence_penalty: 0.85,
+        presence_penalty: 0.9,
 
-        max_tokens: 320,
+        max_tokens: 340,
       });
 
     const text =

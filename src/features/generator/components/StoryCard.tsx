@@ -4,6 +4,8 @@ import {
   forwardRef,
 } from "react";
 
+import { modes } from "@/lib/modes";
+
 type Props = {
   title: string;
 
@@ -18,96 +20,6 @@ type Props = {
   template: string;
 };
 
-const gradients: Record<
-  string,
-  string
-> = {
-
-  love:
-    "from-[#3B0764] via-[#7E22CE] to-[#EC4899]",
-
-  dark:
-    "from-[#020617] via-[#111827] to-black",
-
-  friends:
-    "from-[#082F49] via-[#0369A1] to-[#06B6D4]",
-
-  roast:
-    "from-[#3F0D12] via-[#7F1D1D] to-[#DC2626]",
-
-  mbti:
-    "from-[#1E293B] via-[#334155] to-[#64748B]",
-
-  pastlife:
-    "from-[#312E81] via-[#6366F1] to-[#A78BFA]",
-
-  sunset:
-    "from-[#7C3AED] via-[#EC4899] to-[#F43F5E]",
-
-  ocean:
-    "from-[#082F49] via-[#0369A1] to-[#06B6D4]",
-
-  forest:
-    "from-[#052e16] via-[#166534] to-[#65a30d]",
-};
-
-const accents: Record<
-  string,
-  string
-> = {
-
-  love:
-    "bg-pink-500/20 text-pink-100 border-pink-300/10",
-
-  dark:
-    "bg-zinc-500/20 text-zinc-200 border-zinc-300/10",
-
-  friends:
-    "bg-cyan-500/20 text-cyan-100 border-cyan-300/10",
-
-  roast:
-    "bg-red-500/20 text-red-100 border-red-300/10",
-
-  mbti:
-    "bg-slate-500/20 text-slate-100 border-slate-300/10",
-
-  pastlife:
-    "bg-indigo-500/20 text-indigo-100 border-indigo-300/10",
-
-  sunset:
-    "bg-pink-500/20 text-pink-100 border-pink-300/10",
-
-  ocean:
-    "bg-cyan-500/20 text-cyan-100 border-cyan-300/10",
-
-  forest:
-    "bg-lime-500/20 text-lime-100 border-lime-300/10",
-};
-
-const modeLabels: Record<
-  string,
-  string
-> = {
-
-  love:
-    "LOVE ANALYSIS",
-
-  dark:
-    "DARK SIDE",
-
-  friends:
-    "FRIEND POV",
-
-  roast:
-    "AI ROAST",
-
-  mbti:
-    "MBTI REPORT",
-
-  pastlife:
-    "PAST LIFE",
-};
-
 const StoryCard = forwardRef<
   HTMLDivElement,
   Props
@@ -120,17 +32,19 @@ const StoryCard = forwardRef<
   template,
 }, ref) => {
 
-  const bg =
-    gradients[template] ||
-    gradients.dark;
+  const currentMode =
+    modes.find(
+      (mode) =>
+        mode.id === template
+    );
+
+  const gradient =
+    currentMode?.gradient ||
+    "from-[#020617] via-[#111827] to-black";
 
   const accent =
-    accents[template] ||
-    accents.dark;
-
-  const label =
-    modeLabels[template] ||
-    "AI PERSONA";
+    currentMode?.accent ||
+    "bg-zinc-500/20 text-zinc-100";
 
   return (
     <div
@@ -138,19 +52,22 @@ const StoryCard = forwardRef<
       className={`
         relative
         w-[390px]
-        min-h-[820px]
+        min-h-[860px]
         overflow-hidden
         rounded-[42px]
         bg-gradient-to-br
-        ${bg}
+        ${gradient}
         p-8
-        shadow-[0_30px_120px_rgba(0,0,0,0.5)]
+        shadow-[0_30px_120px_rgba(0,0,0,0.55)]
         border
         border-white/10
       `}
     >
 
-      {/* Background Glow */}
+      {/* Background */}
+      <div className="absolute inset-0 bg-black/15" />
+
+      {/* Glow */}
       <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
 
       <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-pink-500/10 blur-3xl" />
@@ -159,12 +76,6 @@ const StoryCard = forwardRef<
 
       {/* Noise */}
       <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/20" />
-
-      {/* Floating Line */}
-      <div className="absolute left-0 top-32 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col">
@@ -175,24 +86,37 @@ const StoryCard = forwardRef<
           {/* Top Bar */}
           <div className="flex items-center justify-between">
 
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 backdrop-blur-xl">
+            {/* Left */}
+            <div className="flex items-center gap-3">
 
-              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 backdrop-blur-xl">
 
-              <span className="text-[11px] tracking-[0.28em] text-white/70">
-                THISME AI
-              </span>
+                <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+
+                <span className="text-[11px] tracking-[0.25em] text-white/70">
+                  THISME AI
+                </span>
+
+              </div>
+
+              {/* Trending */}
+              {currentMode?.trending && (
+                <div className="rounded-full border border-pink-400/20 bg-pink-500/20 px-3 py-1 text-[10px] font-bold tracking-[0.2em] text-pink-100 backdrop-blur">
+                  HOT
+                </div>
+              )}
 
             </div>
 
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/10 text-xl backdrop-blur-xl">
-              ✦
+            {/* Emoji */}
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/10 text-2xl backdrop-blur-xl">
+              {currentMode?.emoji || "✦"}
             </div>
 
           </div>
 
-          {/* Title */}
-          <div className="mt-9">
+          {/* Mode */}
+          <div className="mt-8">
 
             <div
               className={`
@@ -200,6 +124,7 @@ const StoryCard = forwardRef<
                 items-center
                 rounded-full
                 border
+                border-white/10
                 px-4
                 py-1.5
                 text-[11px]
@@ -208,19 +133,25 @@ const StoryCard = forwardRef<
                 ${accent}
               `}
             >
-              {label}
+              {currentMode?.name || "AI PERSONA"}
             </div>
 
-            <h1 className="mt-6 whitespace-pre-wrap text-[46px] font-black leading-[0.98] tracking-tight text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
+            {/* Title */}
+            <h1 className="mt-6 whitespace-pre-wrap text-[48px] font-black leading-[0.96] tracking-tight text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
               {title}
             </h1>
+
+            {/* Description */}
+            <p className="mt-4 max-w-[90%] text-[15px] leading-[1.7] text-white/60">
+              {currentMode?.description}
+            </p>
 
           </div>
 
         </div>
 
-        {/* Body */}
-        <div className="mt-8 flex flex-1 flex-col gap-5">
+        {/* Blocks */}
+        <div className="mt-9 flex flex-1 flex-col gap-5">
 
           {/* Love */}
           <div className="rounded-[30px] border border-white/10 bg-white/5 p-5 backdrop-blur-2xl shadow-xl">
@@ -235,7 +166,7 @@ const StoryCard = forwardRef<
 
             </div>
 
-            <p className="whitespace-pre-wrap text-[19px] leading-[1.8] text-white/90">
+            <p className="whitespace-pre-wrap text-[19px] leading-[1.85] text-white/90">
               {love}
             </p>
 
@@ -254,7 +185,7 @@ const StoryCard = forwardRef<
 
             </div>
 
-            <p className="whitespace-pre-wrap text-[19px] leading-[1.8] text-white/90">
+            <p className="whitespace-pre-wrap text-[19px] leading-[1.85] text-white/90">
               {dark}
             </p>
 
@@ -273,7 +204,7 @@ const StoryCard = forwardRef<
 
             </div>
 
-            <p className="whitespace-pre-wrap text-[19px] leading-[1.8] text-white/90">
+            <p className="whitespace-pre-wrap text-[19px] leading-[1.85] text-white/90">
               {friends}
             </p>
 
@@ -283,7 +214,7 @@ const StoryCard = forwardRef<
 
         {/* Tags */}
         {tags && (
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
 
             {tags
               .split(" ")
@@ -311,7 +242,7 @@ const StoryCard = forwardRef<
         )}
 
         {/* Footer */}
-        <div className="mt-8 flex items-end justify-between border-t border-white/10 pt-6">
+        <div className="mt-9 flex items-end justify-between border-t border-white/10 pt-6">
 
           <div>
 

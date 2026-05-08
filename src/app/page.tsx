@@ -37,6 +37,29 @@ const loadingMessages = [
   "AI 正在觀察你的情緒裂縫...",
 ];
 
+const trendingPersonalities = [
+  {
+    title: "已讀不回型戀愛腦",
+    emoji: "💔",
+    users: "12.4K",
+  },
+  {
+    title: "高敏感嘴硬人格",
+    emoji: "🫠",
+    users: "9.8K",
+  },
+  {
+    title: "情緒失蹤型人格",
+    emoji: "🌑",
+    users: "16.1K",
+  },
+  {
+    title: "半夜內耗觀察者",
+    emoji: "🖤",
+    users: "21.3K",
+  },
+];
+
 export default function HomePage() {
 
   const [input, setInput] =
@@ -45,11 +68,9 @@ export default function HomePage() {
   const [loading, setLoading] =
     useState(false);
 
-  // AI 模式
   const [mode, setMode] =
     useState("love");
 
-  // 保留模板系統
   const [template, setTemplate] =
     useState<keyof typeof templates>(
       "dark"
@@ -58,17 +79,14 @@ export default function HomePage() {
   const [history, setHistory] =
     useState<HistoryItem[]>([]);
 
-  // loading 文案
   const [loadingText, setLoadingText] =
     useState(
       loadingMessages[0]
     );
 
-  // 多卡切換（STEP 23 基礎）
   const [activeCard, setActiveCard] =
     useState(0);
 
-  // 新版人格結果
   const [current, setCurrent] =
     useState({
       title: "還在想的人",
@@ -86,7 +104,6 @@ export default function HomePage() {
   const cardRef =
     useRef<HTMLDivElement>(null);
 
-  // 讀取歷史
   useEffect(() => {
 
     const saved =
@@ -112,7 +129,6 @@ export default function HomePage() {
 
         setLoading(true);
 
-        // 隨機 loading 文案
         setLoadingText(
           loadingMessages[
             Math.floor(
@@ -152,10 +168,8 @@ export default function HomePage() {
 
           setCurrent(parsed);
 
-          // 重置卡片 index
           setActiveCard(0);
 
-          // 建立歷史紀錄
           const newHistory = [
             {
               title:
@@ -179,7 +193,6 @@ ${parsed.friends}
             ...history,
           ];
 
-          // 最多保留20筆
           const sliced =
             newHistory.slice(
               0,
@@ -238,7 +251,6 @@ ${parsed.friends}
       link.click();
     };
 
-  // 分享文案
   const shareText = `#THISME人格報告
 
 【${current.title}】
@@ -255,40 +267,202 @@ ${current.friends}
 — THISME AI Personality`;
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#0F172A] text-white px-5 py-12">
+    <main className="min-h-screen overflow-hidden bg-[#0F172A] px-5 py-12 text-white">
 
-      {/* Background Glow */}
+      {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
 
-        <div className="absolute top-0 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-purple-500/10 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-purple-500/10 blur-3xl" />
 
         <div className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-pink-500/10 blur-3xl" />
 
+        <div className="absolute left-0 top-1/2 h-[350px] w-[350px] rounded-full bg-cyan-500/10 blur-3xl" />
+
       </div>
 
-      <div className="relative z-10 max-w-md mx-auto flex flex-col items-center">
+      <div className="relative z-10 mx-auto flex max-w-md flex-col items-center">
 
-        {/* Hero */}
-        <div className="mb-10 text-center">
+        {/* NAV */}
+        <div className="mb-10 flex w-full items-center justify-between rounded-full border border-white/10 bg-white/5 px-5 py-3 backdrop-blur-xl">
 
-          <h1 className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
+          <div className="text-lg font-black tracking-wide">
+            THISME
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-white/60">
+
+            <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+
+            1.2M 分析中
+
+          </div>
+
+        </div>
+
+        {/* HERO */}
+        <div className="text-center">
+
+          <div className="mb-4 inline-flex items-center rounded-full border border-purple-400/20 bg-purple-500/10 px-4 py-2 text-xs tracking-[0.2em] text-purple-200 backdrop-blur-xl">
+
+            AI PERSONALITY PLATFORM
+
+          </div>
+
+          <h1 className="bg-gradient-to-r from-purple-300 via-pink-300 to-cyan-300 bg-clip-text text-6xl font-black tracking-tight text-transparent">
 
             THISME
 
           </h1>
 
-          <p className="text-zinc-400 mt-4 leading-relaxed">
+          <p className="mt-5 leading-relaxed text-zinc-400">
 
-            AI 人格娛樂平台
+            把你的情緒、
             <br />
-            把你的狀態變成可以分享的版本
+            變成朋友會想截圖的版本
 
           </p>
 
         </div>
 
-        {/* 模式 */}
-        <div className="w-full mb-8">
+        {/* Trending */}
+        <div className="mt-10 w-full">
+
+          <div className="mb-4 flex items-center justify-between">
+
+            <div>
+
+              <div className="text-sm font-semibold text-white">
+                Trending 人格
+              </div>
+
+              <div className="mt-1 text-xs text-zinc-500">
+                今天最多人分享
+              </div>
+
+            </div>
+
+            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/60">
+              LIVE
+            </div>
+
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+
+            {trendingPersonalities.map(
+              (
+                item,
+                index
+              ) => (
+
+                <button
+                  key={index}
+                  onClick={() =>
+                    setInput(
+                      item.title
+                    )
+                  }
+                  className="
+                    group
+                    rounded-3xl
+                    border
+                    border-white/10
+                    bg-white/5
+                    p-4
+                    text-left
+                    backdrop-blur-xl
+                    transition-all
+                    duration-300
+                    hover:-translate-y-1
+                    hover:border-purple-400/30
+                    hover:bg-white/10
+                  "
+                >
+
+                  <div className="text-3xl">
+                    {item.emoji}
+                  </div>
+
+                  <div className="mt-3 text-sm font-semibold text-white leading-relaxed">
+                    {item.title}
+                  </div>
+
+                  <div className="mt-2 text-xs text-zinc-500">
+                    {item.users} users
+                  </div>
+
+                </button>
+              )
+            )}
+
+          </div>
+
+        </div>
+
+        {/* Community CTA */}
+        <div className="mt-8 w-full rounded-[32px] border border-white/10 bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-6 backdrop-blur-2xl">
+
+          <div className="flex items-start justify-between">
+
+            <div>
+
+              <div className="text-sm tracking-[0.25em] text-purple-200/70">
+                COMMUNITY
+              </div>
+
+              <h2 className="mt-3 text-2xl font-black leading-tight">
+                超過 32 萬人
+                <br />
+                正在分享人格卡
+              </h2>
+
+            </div>
+
+            <div className="rounded-full bg-white/10 px-3 py-2 text-xs text-white/70">
+              HOT
+            </div>
+
+          </div>
+
+          <div className="mt-5 flex items-center gap-2">
+
+            <div className="flex -space-x-3">
+
+              {[1, 2, 3, 4].map(
+                (item) => (
+                  <div
+                    key={item}
+                    className="
+                      flex
+                      h-10
+                      w-10
+                      items-center
+                      justify-center
+                      rounded-full
+                      border
+                      border-white/10
+                      bg-white/10
+                      text-sm
+                      backdrop-blur
+                    "
+                  >
+                    ✦
+                  </div>
+                )
+              )}
+
+            </div>
+
+            <div className="ml-3 text-sm text-white/70">
+              今天已新增 8,421 張人格卡
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Mode */}
+        <div className="mt-10 w-full">
 
           <div className="mb-3 text-sm text-zinc-400">
             選擇人格模式
@@ -302,7 +476,7 @@ ${current.friends}
         </div>
 
         {/* Input */}
-        <div className="w-full">
+        <div className="mt-8 w-full">
 
           <InputBox
             value={input}
@@ -312,7 +486,7 @@ ${current.friends}
         </div>
 
         {/* Generate */}
-        <div className="w-full mt-5">
+        <div className="mt-5 w-full">
 
           <GenerateButton
             onClick={
@@ -343,11 +517,11 @@ ${current.friends}
 
               <div className="h-14 w-14 rounded-full border-2 border-purple-500/20" />
 
-              <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-pink-400 border-r-purple-400" />
+              <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-r-purple-400 border-t-pink-400" />
 
             </div>
 
-            <p className="animate-pulse text-zinc-400 text-sm tracking-wide">
+            <p className="animate-pulse text-sm tracking-wide text-zinc-400">
               {loadingText}
             </p>
 
@@ -355,7 +529,7 @@ ${current.friends}
         )}
 
         {/* Story */}
-        <div className="mt-10 w-full flex justify-center">
+        <div className="mt-12 flex w-full justify-center">
 
           <StoryCard
             ref={cardRef}
@@ -368,7 +542,7 @@ ${current.friends}
 
         </div>
 
-        {/* Card Switch UI */}
+        {/* Card Switch */}
         <div className="mt-5 flex items-center gap-2">
 
           {[0, 1, 2].map(
@@ -400,7 +574,7 @@ ${current.friends}
         </div>
 
         {/* Actions */}
-        <div className="mt-6 flex gap-4 flex-wrap justify-center">
+        <div className="mt-6 flex flex-wrap justify-center gap-4">
 
           <DownloadButton
             onClick={
@@ -414,7 +588,7 @@ ${current.friends}
 
         </div>
 
-        {/* 再測一次 */}
+        {/* CTA */}
         <button
           onClick={
             generateVersion
@@ -429,7 +603,7 @@ ${current.friends}
             py-3
             text-sm
             text-white/80
-            backdrop-blur
+            backdrop-blur-xl
             transition-all
             hover:bg-white/10
             hover:text-white
@@ -440,8 +614,34 @@ ${current.friends}
 
         </button>
 
+        {/* Social Proof */}
+        <div className="mt-10 w-full rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <div className="text-lg font-bold">
+                朋友都在玩的 AI 人格
+              </div>
+
+              <div className="mt-2 text-sm leading-relaxed text-zinc-400">
+                越多人分享，
+                越容易看到自己的另一面。
+              </div>
+
+            </div>
+
+            <div className="text-5xl">
+              🫠
+            </div>
+
+          </div>
+
+        </div>
+
         {/* History */}
-        <div className="w-full mt-12">
+        <div className="mt-12 w-full">
 
           <HistoryList
             items={history}
