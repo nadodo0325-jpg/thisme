@@ -16,6 +16,8 @@ import StoryCard from "@/features/generator/components/StoryCard";
 import TemplateSelector from "@/features/generator/components/TemplateSelector";
 import HistoryList from "@/features/generator/components/HistoryList";
 
+import ModeSelector from "@/components/ModeSelector";
+
 import { templates } from "@/lib/templates";
 
 import { parseResponse } from "@/features/generator/utils/parseResponse";
@@ -32,6 +34,10 @@ export default function HomePage() {
 
   const [loading, setLoading] =
     useState(false);
+
+  // 新增：AI 模式
+  const [mode, setMode] =
+    useState("love");
 
   const [template, setTemplate] =
     useState<keyof typeof templates>("dark");
@@ -81,6 +87,9 @@ export default function HomePage() {
 
           body: JSON.stringify({
             input,
+
+            // 新增：傳送模式
+            mode,
           }),
         });
 
@@ -159,20 +168,40 @@ ${current.title}
 ${current.text}`;
 
   return (
-    <main className="min-h-screen bg-black text-white px-5 py-12">
+    <main className="min-h-screen bg-[#0F172A] text-white px-5 py-12">
 
       <div className="max-w-md mx-auto flex flex-col items-center">
 
-        {/* Logo */}
-        <h1 className="text-5xl font-bold mb-3 tracking-tight text-center">
-          我這版
-        </h1>
+        {/* Hero */}
+        <div className="mb-10 text-center">
 
-        {/* Subtitle */}
-        <p className="text-zinc-500 mb-10 text-center leading-relaxed">
-          把你現在的狀態，
-          變成一個可以被看到的版本
-        </p>
+          {/* Logo */}
+          <h1 className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            THISME
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-zinc-400 mt-4 leading-relaxed">
+            AI 人格娛樂平台
+            <br />
+            把你的狀態變成可以分享的版本
+          </p>
+
+        </div>
+
+        {/* AI 模式選擇 */}
+        <div className="w-full mb-8">
+
+          <div className="mb-3 text-sm text-zinc-400">
+            選擇人格模式
+          </div>
+
+          <ModeSelector
+            selectedMode={mode}
+            onSelect={setMode}
+          />
+
+        </div>
 
         {/* Input */}
         <div className="w-full">
@@ -183,30 +212,36 @@ ${current.text}`;
         </div>
 
         {/* Generate */}
-        <GenerateButton
-          onClick={generateVersion}
-        />
+        <div className="w-full mt-5">
+          <GenerateButton
+            onClick={generateVersion}
+          />
+        </div>
 
         {/* Template */}
-        <TemplateSelector
-          current={template}
-          onChange={setTemplate}
-        />
+        <div className="mt-6">
+          <TemplateSelector
+            current={template}
+            onChange={setTemplate}
+          />
+        </div>
 
         {/* Loading */}
         {loading && (
-          <p className="mt-6 text-zinc-500">
-            生成中...
+          <p className="mt-6 text-zinc-500 animate-pulse">
+            AI 正在分析你的靈魂中...
           </p>
         )}
 
         {/* Story */}
-        <StoryCard
-          ref={cardRef}
-          title={current.title}
-          text={current.text}
-          template={template}
-        />
+        <div className="mt-8 w-full flex justify-center">
+          <StoryCard
+            ref={cardRef}
+            title={current.title}
+            text={current.text}
+            template={template}
+          />
+        </div>
 
         {/* Actions */}
         <div className="mt-6 flex gap-4 flex-wrap justify-center">
@@ -222,9 +257,11 @@ ${current.text}`;
         </div>
 
         {/* History */}
-        <HistoryList
-          items={history}
-        />
+        <div className="w-full mt-10">
+          <HistoryList
+            items={history}
+          />
+        </div>
 
       </div>
 
