@@ -4,40 +4,89 @@ export function parseResponse(
 
   // 統一換行
   const cleaned =
-    text.replace(/\r/g, "");
+    text
+      .replace(/\r/g, "")
+      .trim();
 
   // 通用抓取函式
   const extract = (
-    label: string
+    labels: string[]
   ) => {
 
-    const regex =
-      new RegExp(
-        `${label}[：:]\\s*([\\s\\S]*?)(?=\\n[A-Za-z\u4e00-\u9fa5]+[：:]|$)`
-      );
+    for (const label of labels) {
 
-    const match =
-      cleaned.match(regex);
+      const regex =
+        new RegExp(
+          `${label}[：:]\\s*([\\s\\S]*?)(?=\\n(?:人格|戀愛狀態|黑暗面|朋友眼中的你|標籤|Tags?)[：:]|$)`,
+          "i"
+        );
 
-    return (
-      match?.[1]
-        ?.trim()
-        ?.replace(/\n/g, " ") ||
-      ""
-    );
+      const match =
+        cleaned.match(regex);
+
+      if (
+        match?.[1]
+      ) {
+
+        return match[1]
+          .trim()
+          .replace(/\n+/g, " ")
+          .replace(/\s{2,}/g, " ");
+      }
+    }
+
+    return "";
   };
 
   const title =
-    extract("人格");
+    extract([
+      "人格",
+      "人格名稱",
+      "標題",
+    ]);
 
   const love =
-    extract("戀愛狀態");
+    extract([
+      "戀愛狀態",
+      "戀愛人格",
+      "愛情狀態",
+    ]);
 
   const dark =
-    extract("黑暗面");
+    extract([
+      "黑暗面",
+      "陰暗面",
+      "真實黑暗面",
+    ]);
 
   const friends =
-    extract("朋友眼中的你");
+    extract([
+      "朋友眼中的你",
+      "朋友視角",
+      "朋友怎麼看你",
+    ]);
+
+  const tags =
+    extract([
+      "標籤",
+      "Tags",
+      "TAGS",
+    ]);
+
+  // 自動補 #
+  const normalizedTags =
+    tags
+      ? tags
+          .split(/[\s,，]+/)
+          .filter(Boolean)
+          .map((tag) =>
+            tag.startsWith("#")
+              ? tag
+              : `#${tag}`
+          )
+          .slice(0, 5)
+          .join(" ")
+      : "#情緒型人格 #慢熱系 #高敏感";
 
   return {
     title:
@@ -55,5 +104,8 @@ export function parseResponse(
     friends:
       friends ||
       "大家其實比你想像中更懂你。",
+
+    tags:
+      normalizedTags,
   };
 }

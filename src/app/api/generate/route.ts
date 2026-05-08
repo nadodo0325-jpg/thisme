@@ -14,10 +14,11 @@ const modePrompts: Record<
 
 風格：
 - 曖昧
-- 有點情緒
+- 情緒感強
 - 像深夜聊天
 - 像 IG / Threads 文案
 - 有戀愛腦感
+- 有點脆弱
 - 不要太正能量
 `,
 
@@ -30,6 +31,7 @@ const modePrompts: Record<
 - 有點狠
 - 像朋友吐槽
 - 像 Threads 迷因
+- 有現實感
 - 不要雞湯
 `,
 
@@ -40,6 +42,7 @@ const modePrompts: Record<
 - 很懂人
 - 很像人格觀察
 - 有點心理學
+- 有高敏感感
 - 不要太正式
 `,
 
@@ -51,6 +54,7 @@ const modePrompts: Record<
 - 靈魂感
 - 微中二
 - 有宿命感
+- 像命運解析
 `,
 
   friends: `
@@ -60,7 +64,8 @@ const modePrompts: Record<
 - 像朋友私下評價
 - 真實
 - 有點狠
-- 但很準
+- 有點暖
+- 很像熟人吐槽
 `,
 
   roast: `
@@ -72,6 +77,7 @@ const modePrompts: Record<
 - 很像 Threads
 - 像迷因留言區
 - 不要客氣
+- 要有 punch
 `,
 };
 
@@ -90,6 +96,8 @@ const randomStyles = [
   "像戀愛失敗後的清醒",
   "像在假裝沒事的人",
   "像情緒已讀不回",
+  "像快把情緒藏不住的人",
+  "像習慣偷偷內耗的人",
 ];
 
 const randomPersonalityRules = [
@@ -99,6 +107,18 @@ const randomPersonalityRules = [
   "人格名稱要有情緒感",
   "人格名稱不要普通",
   "人格名稱要有記憶點",
+  "人格名稱要像社群流行標籤",
+  "人格名稱要像戀愛人格分類",
+];
+
+const randomTagStyles = [
+  "#高敏感人格 #戀愛腦",
+  "#慢熱型人格 #情緒系",
+  "#內耗人格 #嘴硬系",
+  "#假裝沒事型 #emo人格",
+  "#愛逃避的人 #情緒觀察者",
+  "#戀愛型人格 #高共感",
+  "#脆弱系人格 #深夜情緒",
 ];
 
 export async function POST(req: Request) {
@@ -127,6 +147,14 @@ export async function POST(req: Request) {
         Math.floor(
           Math.random() *
           randomPersonalityRules.length
+        )
+      ];
+
+    const randomTags =
+      randomTagStyles[
+        Math.floor(
+          Math.random() *
+          randomTagStyles.length
         )
       ];
 
@@ -171,6 +199,7 @@ ${randomRule}
 - 不要太長
 - 一句話要有 punch
 - 不要使用老套雞湯
+- 要有社群病毒感
 
 重要：
 
@@ -179,6 +208,11 @@ ${randomRule}
 3. 不要三段都很像
 4. 每段都要有情緒
 5. 可以短，但要有力
+6. 要像真的很懂這個人
+7. 標籤要像社群熱門人格 tag
+
+標籤風格參考：
+${randomTags}
 
 輸出格式必須完全照下面：
 
@@ -189,6 +223,8 @@ ${randomRule}
 黑暗面：xxx
 
 朋友眼中的你：xxx
+
+標籤：#xxx #xxx #xxx
 `;
 
     const completion =
@@ -209,15 +245,15 @@ ${randomRule}
           },
         ],
 
-        temperature: 1.4,
+        temperature: 1.45,
 
         top_p: 0.95,
 
-        frequency_penalty: 0.8,
+        frequency_penalty: 0.9,
 
-        presence_penalty: 0.7,
+        presence_penalty: 0.85,
 
-        max_tokens: 260,
+        max_tokens: 320,
       });
 
     const text =
