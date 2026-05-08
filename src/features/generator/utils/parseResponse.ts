@@ -5,19 +5,37 @@ export function parseResponse(
   const clean =
     raw.replace(/\*\*/g, "");
 
-  const titleMatch =
-    clean.match(/版本[:：]\s*(.+)/);
+  const getValue = (
+    label: string
+  ) => {
 
-  const textMatch =
-    clean.match(/句子[:：]\s*([\s\S]+)/);
+    const regex = new RegExp(
+      `${label}[:：]\\s*([\\s\\S]*?)(?=\\n[A-Za-z\u4e00-\u9fa5]+[:：]|$)`
+    );
+
+    return (
+      clean.match(regex)?.[1]
+        ?.trim() || ""
+    );
+  };
 
   return {
+
     title:
-      titleMatch?.[1]?.trim() ||
+      getValue("人格") ||
       "無法定義的人",
 
-    text:
-      textMatch?.[1]?.trim() ||
-      "有些情緒，連 AI 都說不清。",
+    love:
+      getValue("戀愛狀態") ||
+      "有些情緒，沒有答案。",
+
+    dark:
+      getValue("黑暗面") ||
+      "你只是太習慣忍耐。",
+
+    friends:
+      getValue("朋友眼中的你") ||
+      "有些人其實很懂你。",
+
   };
 }

@@ -6,7 +6,9 @@ import {
 
 type Props = {
   title: string;
-  text: string;
+  love: string;
+  dark: string;
+  friends: string;
   template: string;
 };
 
@@ -30,7 +32,13 @@ const gradients: Record<
 const StoryCard = forwardRef<
   HTMLDivElement,
   Props
->(({ title, text, template }, ref) => {
+>(({
+  title,
+  love,
+  dark,
+  friends,
+  template,
+}, ref) => {
 
   const bg =
     gradients[template] ||
@@ -75,18 +83,53 @@ const StoryCard = forwardRef<
             THISME AI
           </div>
 
-          <h1 className="text-[42px] leading-[1.05] font-black text-white whitespace-pre-wrap tracking-tight drop-shadow-xl">
+          <h1 className="text-[40px] leading-[1.05] font-black text-white whitespace-pre-wrap tracking-tight drop-shadow-xl">
             {title}
           </h1>
 
         </div>
 
         {/* Middle */}
-        <div className="my-10 flex-1 flex items-center">
+        <div className="my-8 flex-1 flex flex-col justify-center gap-6">
 
-          <p className="text-[28px] leading-[1.6] text-white/90 whitespace-pre-wrap font-medium">
-            {text}
-          </p>
+          {/* Love */}
+          <div>
+
+            <div className="mb-2 text-xs uppercase tracking-[0.2em] text-pink-200/60">
+              戀愛狀態
+            </div>
+
+            <p className="text-[20px] leading-[1.6] text-white/90 whitespace-pre-wrap">
+              {love}
+            </p>
+
+          </div>
+
+          {/* Dark */}
+          <div>
+
+            <div className="mb-2 text-xs uppercase tracking-[0.2em] text-purple-200/60">
+              黑暗面
+            </div>
+
+            <p className="text-[20px] leading-[1.6] text-white/90 whitespace-pre-wrap">
+              {dark}
+            </p>
+
+          </div>
+
+          {/* Friends */}
+          <div>
+
+            <div className="mb-2 text-xs uppercase tracking-[0.2em] text-cyan-200/60">
+              朋友眼中的你
+            </div>
+
+            <p className="text-[20px] leading-[1.6] text-white/90 whitespace-pre-wrap">
+              {friends}
+            </p>
+
+          </div>
 
         </div>
 
@@ -113,6 +156,10 @@ const StoryCard = forwardRef<
 
             <div className="mt-1 text-sm text-white/70">
               Share Your Version
+            </div>
+
+            <div className="mt-2 text-xs text-white/40">
+              @thisme.ai
             </div>
 
           </div>

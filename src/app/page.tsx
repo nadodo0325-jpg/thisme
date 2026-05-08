@@ -45,10 +45,20 @@ export default function HomePage() {
   const [history, setHistory] =
     useState<HistoryItem[]>([]);
 
-  const [current, setCurrent] = useState({
-    title: "還在想的人",
-    text: "有些答案，不會馬上出現。",
-  });
+  // 新版人格結果
+  const [current, setCurrent] =
+    useState({
+      title: "還在想的人",
+
+      love:
+        "有些答案，不會馬上出現。",
+
+      dark:
+        "你只是太習慣自己消化。",
+
+      friends:
+        "有些人其實一直都懂你。",
+    });
 
   const cardRef =
     useRef<HTMLDivElement>(null);
@@ -105,7 +115,18 @@ export default function HomePage() {
         const newHistory = [
           {
             title: parsed.title,
-            text: parsed.text,
+
+            text: `
+戀愛狀態：
+${parsed.love}
+
+黑暗面：
+${parsed.dark}
+
+朋友眼中的你：
+${parsed.friends}
+            `,
+
             createdAt:
               new Date().toLocaleDateString(),
           },
@@ -163,12 +184,21 @@ export default function HomePage() {
     link.click();
   };
 
-  // 分享文案
-  const shareText = `#我這版
+  // 升級版分享文案
+  const shareText = `#THISME人格報告
 
-${current.title}
+【${current.title}】
 
-${current.text}`;
+戀愛狀態：
+${current.love}
+
+黑暗面：
+${current.dark}
+
+朋友眼中的你：
+${current.friends}
+
+— THISME AI Personality`;
 
   return (
     <main className="min-h-screen bg-[#0F172A] text-white px-5 py-12">
@@ -248,7 +278,9 @@ ${current.text}`;
           <StoryCard
             ref={cardRef}
             title={current.title}
-            text={current.text}
+            love={current.love}
+            dark={current.dark}
+            friends={current.friends}
             template={template}
           />
 
