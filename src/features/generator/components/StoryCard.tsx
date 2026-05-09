@@ -46,26 +46,38 @@ const StoryCard = forwardRef<
     currentMode?.accent ||
     "bg-zinc-500/20 text-zinc-100";
 
+  const safeTags =
+    tags
+      ? tags
+          .split(/[\s,，]+/)
+          .filter(Boolean)
+          .slice(0, 5)
+      : [
+          "#情緒型人格",
+          "#高敏感",
+          "#慢熱系",
+        ];
+
   return (
     <div
       ref={ref}
       className={`
         relative
         w-[390px]
-        min-h-[860px]
+        min-h-[920px]
         overflow-hidden
         rounded-[42px]
+        border
+        border-white/10
         bg-gradient-to-br
         ${gradient}
         p-8
-        shadow-[0_30px_120px_rgba(0,0,0,0.55)]
-        border
-        border-white/10
+        shadow-[0_30px_120px_rgba(0,0,0,0.6)]
       `}
     >
 
-      {/* Background */}
-      <div className="absolute inset-0 bg-black/15" />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/20" />
 
       {/* Glow */}
       <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
@@ -77,13 +89,16 @@ const StoryCard = forwardRef<
       {/* Noise */}
       <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
+      {/* Floating line */}
+      <div className="absolute left-0 top-32 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col">
 
         {/* Header */}
         <div>
 
-          {/* Top Bar */}
+          {/* Top */}
           <div className="flex items-center justify-between">
 
             {/* Left */}
@@ -91,7 +106,7 @@ const StoryCard = forwardRef<
 
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 backdrop-blur-xl">
 
-                <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
 
                 <span className="text-[11px] tracking-[0.25em] text-white/70">
                   THISME AI
@@ -99,7 +114,6 @@ const StoryCard = forwardRef<
 
               </div>
 
-              {/* Trending */}
               {currentMode?.trending && (
                 <div className="rounded-full border border-pink-400/20 bg-pink-500/20 px-3 py-1 text-[10px] font-bold tracking-[0.2em] text-pink-100 backdrop-blur">
                   HOT
@@ -115,7 +129,7 @@ const StoryCard = forwardRef<
 
           </div>
 
-          {/* Mode */}
+          {/* Label */}
           <div className="mt-8">
 
             <div
@@ -133,11 +147,12 @@ const StoryCard = forwardRef<
                 ${accent}
               `}
             >
-              {currentMode?.name || "AI PERSONA"}
+              {currentMode?.name ||
+                "AI PERSONA"}
             </div>
 
             {/* Title */}
-            <h1 className="mt-6 whitespace-pre-wrap text-[48px] font-black leading-[0.96] tracking-tight text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
+            <h1 className="mt-6 whitespace-pre-wrap break-words text-[48px] font-black leading-[0.95] tracking-tight text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
               {title}
             </h1>
 
@@ -150,7 +165,7 @@ const StoryCard = forwardRef<
 
         </div>
 
-        {/* Blocks */}
+        {/* Content Blocks */}
         <div className="mt-9 flex flex-1 flex-col gap-5">
 
           {/* Love */}
@@ -166,7 +181,7 @@ const StoryCard = forwardRef<
 
             </div>
 
-            <p className="whitespace-pre-wrap text-[19px] leading-[1.85] text-white/90">
+            <p className="whitespace-pre-wrap break-words text-[19px] leading-[1.9] text-white/90">
               {love}
             </p>
 
@@ -185,7 +200,7 @@ const StoryCard = forwardRef<
 
             </div>
 
-            <p className="whitespace-pre-wrap text-[19px] leading-[1.85] text-white/90">
+            <p className="whitespace-pre-wrap break-words text-[19px] leading-[1.9] text-white/90">
               {dark}
             </p>
 
@@ -204,7 +219,7 @@ const StoryCard = forwardRef<
 
             </div>
 
-            <p className="whitespace-pre-wrap text-[19px] leading-[1.85] text-white/90">
+            <p className="whitespace-pre-wrap break-words text-[19px] leading-[1.9] text-white/90">
               {friends}
             </p>
 
@@ -213,33 +228,34 @@ const StoryCard = forwardRef<
         </div>
 
         {/* Tags */}
-        {tags && (
-          <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap gap-3">
 
-            {tags
-              .split(" ")
-              .filter(Boolean)
-              .map((tag, index) => (
+          {safeTags.map(
+            (
+              tag,
+              index
+            ) => (
 
-                <div
-                  key={index}
-                  className="
-                    rounded-full
-                    border
-                    border-white/10
-                    bg-white/10
-                    px-4
-                    py-2
-                    text-sm
-                    text-white/85
-                    backdrop-blur-xl
-                  "
-                >
-                  {tag}
-                </div>
-              ))}
-          </div>
-        )}
+              <div
+                key={index}
+                className="
+                  rounded-full
+                  border
+                  border-white/10
+                  bg-white/10
+                  px-4
+                  py-2
+                  text-sm
+                  text-white/85
+                  backdrop-blur-xl
+                "
+              >
+                {tag}
+              </div>
+            )
+          )}
+
+        </div>
 
         {/* Footer */}
         <div className="mt-9 flex items-end justify-between border-t border-white/10 pt-6">

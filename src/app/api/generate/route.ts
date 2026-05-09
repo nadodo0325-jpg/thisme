@@ -200,7 +200,28 @@ ${randomRule}
 ${viralReference}
 
 請根據使用者輸入，
-生成一份「超有分享感」的 AI 人格報告。
+生成「3 張不同角度的人格卡」。
+
+這 3 張人格卡必須：
+
+- 完全不同感覺
+- 不同人格方向
+- 不同情緒
+- 不同觀察角度
+- 不同 punch
+- 不要只是改幾個字
+- 要像不同人格宇宙
+
+重要：
+
+CARD 1：
+偏「最表面的你」
+
+CARD 2：
+偏「戀愛/情緒裡的你」
+
+CARD 3：
+偏「連你自己都不敢承認的你」
 
 核心目標：
 
@@ -247,20 +268,49 @@ ${viralReference}
 
 重要：
 
-1. 人格名稱一定要強
-2. 三個欄位要有不同角度
-3. 不要三段都很像
+1. 三張人格都要不同
+2. 人格名稱一定要強
+3. 每張都要像熱門人格
 4. 每段都要有情緒
 5. 可以短，但要有力
 6. 要像真的很懂這個人
 7. 標籤要像社群熱門人格 tag
 8. 人格名稱要像會流行
 9. 內容要有「被講中」感
+10. 絕對不要讓三張很像
 
 標籤風格參考：
 ${randomTags}
 
 輸出格式必須完全照下面：
+
+CARD 1
+
+人格：xxx
+
+戀愛狀態：xxx
+
+黑暗面：xxx
+
+朋友眼中的你：xxx
+
+標籤：#xxx #xxx #xxx
+
+
+CARD 2
+
+人格：xxx
+
+戀愛狀態：xxx
+
+黑暗面：xxx
+
+朋友眼中的你：xxx
+
+標籤：#xxx #xxx #xxx
+
+
+CARD 3
 
 人格：xxx
 
@@ -291,15 +341,15 @@ ${randomTags}
           },
         ],
 
-        temperature: 1.5,
+        temperature: 1.6,
 
         top_p: 0.95,
 
-        frequency_penalty: 1,
+        frequency_penalty: 1.1,
 
-        presence_penalty: 0.9,
+        presence_penalty: 1,
 
-        max_tokens: 340,
+        max_tokens: 900,
       });
 
     const text =

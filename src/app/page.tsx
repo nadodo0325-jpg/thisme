@@ -20,7 +20,10 @@ import ModeSelector from "@/components/ModeSelector";
 
 import { templates } from "@/lib/templates";
 
-import { parseResponse } from "@/features/generator/utils/parseResponse";
+import {
+  parseResponse,
+  PersonalityCard,
+} from "@/features/generator/utils/parseResponse";
 
 type HistoryItem = {
   title: string;
@@ -87,19 +90,29 @@ export default function HomePage() {
   const [activeCard, setActiveCard] =
     useState(0);
 
-  const [current, setCurrent] =
-    useState({
-      title: "還在想的人",
+  const [cards, setCards] =
+    useState<PersonalityCard[]>([
+      {
+        title: "還在想的人",
 
-      love:
-        "有些答案，不會馬上出現。",
+        love:
+          "有些答案，不會馬上出現。",
 
-      dark:
-        "你只是太習慣自己消化。",
+        dark:
+          "你只是太習慣自己消化。",
 
-      friends:
-        "有些人其實一直都懂你。",
-    });
+        friends:
+          "有些人其實一直都懂你。",
+
+        tags:
+          "#高敏感人格 #情緒系",
+      },
+    ]);
+
+  const current =
+    cards[
+      activeCard
+    ] || cards[0];
 
   const cardRef =
     useRef<HTMLDivElement>(null);
@@ -161,29 +174,34 @@ export default function HomePage() {
 
         if (data.result) {
 
-          const parsed =
+          const parsedCards =
             parseResponse(
               data.result
             );
 
-          setCurrent(parsed);
+          setCards(
+            parsedCards
+          );
 
           setActiveCard(0);
+
+          const firstCard =
+            parsedCards[0];
 
           const newHistory = [
             {
               title:
-                parsed.title,
+                firstCard.title,
 
               text: `
 戀愛狀態：
-${parsed.love}
+${firstCard.love}
 
 黑暗面：
-${parsed.dark}
+${firstCard.dark}
 
 朋友眼中的你：
-${parsed.friends}
+${firstCard.friends}
               `,
 
               createdAt:
@@ -244,14 +262,36 @@ ${parsed.friends}
         );
 
       link.download =
-        `thisme-${Date.now()}.png`;
+        `thisme-${activeCard + 1}-${Date.now()}.png`;
 
       link.href = dataUrl;
 
       link.click();
     };
 
-  const shareText = `#THISME人格報告
+  const nextCard =
+    () => {
+
+      setActiveCard(
+        (prev) =>
+          (prev + 1) %
+          cards.length
+      );
+    };
+
+  const prevCard =
+    () => {
+
+      setActiveCard(
+        (prev) =>
+          prev === 0
+            ? cards.length - 1
+            : prev - 1
+      );
+    };
+
+  const shareText = `
+#THISME人格報告
 
 【${current.title}】
 
@@ -264,7 +304,10 @@ ${current.dark}
 朋友眼中的你：
 ${current.friends}
 
-— THISME AI Personality`;
+${current.tags}
+
+— THISME AI Personality
+`;
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#0F172A] px-5 py-12 text-white">
@@ -529,24 +572,96 @@ ${current.friends}
         )}
 
         {/* Story */}
-        <div className="mt-12 flex w-full justify-center">
+        <div className="relative mt-12 flex w-full items-center justify-center">
 
-          <StoryCard
-            ref={cardRef}
-            title={current.title}
-            love={current.love}
-            dark={current.dark}
-            friends={current.friends}
-            template={mode}
-          />
+          {/* Left */}
+          {cards.length > 1 && (
+            <button
+              onClick={prevCard}
+              className="
+                absolute
+                left-0
+                z-20
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-white/10
+                bg-white/10
+                text-xl
+                backdrop-blur-xl
+                transition-all
+                hover:scale-105
+                hover:bg-white/20
+              "
+            >
+              ←
+            </button>
+          )}
+
+          <div
+            className="
+              transition-all
+              duration-500
+              animate-in
+              fade-in
+              zoom-in-95
+            "
+          >
+
+            <StoryCard
+              ref={cardRef}
+              title={current.title}
+              love={current.love}
+              dark={current.dark}
+              friends={current.friends}
+              tags={current.tags}
+              template={mode}
+            />
+
+          </div>
+
+          {/* Right */}
+          {cards.length > 1 && (
+            <button
+              onClick={nextCard}
+              className="
+                absolute
+                right-0
+                z-20
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-white/10
+                bg-white/10
+                text-xl
+                backdrop-blur-xl
+                transition-all
+                hover:scale-105
+                hover:bg-white/20
+              "
+            >
+              →
+            </button>
+          )}
 
         </div>
 
-        {/* Card Switch */}
+        {/* Dots */}
         <div className="mt-5 flex items-center gap-2">
 
-          {[0, 1, 2].map(
-            (index) => (
+          {cards.map(
+            (
+              _,
+              index
+            ) => (
 
               <button
                 key={index}
