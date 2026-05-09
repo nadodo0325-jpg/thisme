@@ -17,6 +17,8 @@ export type Mode = {
 
   cardLabel: string;
 
+  label: string;
+
   trending: boolean;
 
   popular?: boolean;
@@ -30,7 +32,6 @@ export type Mode = {
 };
 
 export const modes: Mode[] = [
-
   {
     id: "love",
 
@@ -54,6 +55,9 @@ export const modes: Mode[] = [
 
     cardLabel:
       "LOVE ANALYSIS",
+
+    label:
+      "AI LOVE ANALYSIS",
 
     trending: true,
 
@@ -89,6 +93,9 @@ export const modes: Mode[] = [
     cardLabel:
       "DARK SIDE",
 
+    label:
+      "AI DARK PERSONA",
+
     trending: true,
 
     popular: true,
@@ -122,6 +129,9 @@ export const modes: Mode[] = [
 
     cardLabel:
       "FRIEND VIEW",
+
+    label:
+      "FRIEND PERSPECTIVE",
 
     trending: false,
 
@@ -157,6 +167,9 @@ export const modes: Mode[] = [
     cardLabel:
       "AI ROAST",
 
+    label:
+      "BRUTAL AI ANALYSIS",
+
     trending: true,
 
     popular: true,
@@ -191,6 +204,9 @@ export const modes: Mode[] = [
     cardLabel:
       "MBTI REPORT",
 
+    label:
+      "MBTI PERSONALITY",
+
     trending: false,
 
     popular: false,
@@ -224,6 +240,9 @@ export const modes: Mode[] = [
 
     cardLabel:
       "PAST LIFE",
+
+    label:
+      "SOUL MEMORY ANALYSIS",
 
     trending: false,
 

@@ -2,6 +2,7 @@
 
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -13,12 +14,11 @@ import GenerateButton from "@/features/generator/components/GenerateButton";
 import DownloadButton from "@/features/generator/components/DownloadButton";
 import CopyButton from "@/features/generator/components/CopyButton";
 import StoryCard from "@/features/generator/components/StoryCard";
-import TemplateSelector from "@/features/generator/components/TemplateSelector";
 import HistoryList from "@/features/generator/components/HistoryList";
 
 import ModeSelector from "@/components/ModeSelector";
 
-import { templates } from "@/lib/templates";
+import { modes } from "@/lib/modes";
 
 import {
   parseResponse,
@@ -28,6 +28,14 @@ import {
 type HistoryItem = {
   title: string;
   text: string;
+  createdAt: string;
+};
+
+type FavoriteItem = {
+  id: string;
+  title: string;
+  tags?: string;
+  mode: string;
   createdAt: string;
 };
 
@@ -74,13 +82,11 @@ export default function HomePage() {
   const [mode, setMode] =
     useState("love");
 
-  const [template, setTemplate] =
-    useState<keyof typeof templates>(
-      "dark"
-    );
-
   const [history, setHistory] =
     useState<HistoryItem[]>([]);
+
+  const [favorites, setFavorites] =
+    useState<FavoriteItem[]>([]);
 
   const [loadingText, setLoadingText] =
     useState(
@@ -114,24 +120,121 @@ export default function HomePage() {
       activeCard
     ] || cards[0];
 
+  const currentMode =
+    useMemo(
+      () =>
+        modes.find(
+          (item) =>
+            item.id === mode
+        ) || modes[0],
+      [mode]
+    );
+
   const cardRef =
     useRef<HTMLDivElement>(null);
 
   useEffect(() => {
 
-    const saved =
+    const savedHistory =
       localStorage.getItem(
         "thisme-history"
       );
 
-    if (saved) {
+    if (savedHistory) {
 
       setHistory(
-        JSON.parse(saved)
+        JSON.parse(
+          savedHistory
+        )
+      );
+    }
+
+    const savedFavorites =
+      localStorage.getItem(
+        "thisme-favorites"
+      );
+
+    if (savedFavorites) {
+
+      setFavorites(
+        JSON.parse(
+          savedFavorites
+        )
       );
     }
 
   }, []);
+
+  const favoriteId =
+    `${mode}-${current.title}`;
+
+  const isFavorited =
+    favorites.some(
+      (item) =>
+        item.id ===
+        favoriteId
+    );
+
+  const toggleFavorite =
+    () => {
+
+      if (!current) return;
+
+      if (isFavorited) {
+
+        const filtered =
+          favorites.filter(
+            (item) =>
+              item.id !==
+              favoriteId
+          );
+
+        setFavorites(
+          filtered
+        );
+
+        localStorage.setItem(
+          "thisme-favorites",
+          JSON.stringify(
+            filtered
+          )
+        );
+
+        return;
+      }
+
+      const newFavorite: FavoriteItem =
+        {
+          id: favoriteId,
+
+          title:
+            current.title,
+
+          tags:
+            current.tags,
+
+          mode,
+
+          createdAt:
+            new Date().toLocaleDateString(),
+        };
+
+      const updated = [
+        newFavorite,
+        ...favorites,
+      ].slice(0, 50);
+
+      setFavorites(
+        updated
+      );
+
+      localStorage.setItem(
+        "thisme-favorites",
+        JSON.stringify(
+          updated
+        )
+      );
+    };
 
   const generateVersion =
     async () => {
@@ -315,7 +418,21 @@ ${current.tags}
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
 
-        <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-purple-500/10 blur-3xl" />
+        <div
+          className={`
+            absolute
+            left-1/2
+            top-0
+            h-[500px]
+            w-[500px]
+            -translate-x-1/2
+            rounded-full
+            blur-3xl
+            opacity-30
+            bg-gradient-to-br
+            ${currentMode.gradient}
+          `}
+        />
 
         <div className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-pink-500/10 blur-3xl" />
 
@@ -345,9 +462,23 @@ ${current.tags}
         {/* HERO */}
         <div className="text-center">
 
-          <div className="mb-4 inline-flex items-center rounded-full border border-purple-400/20 bg-purple-500/10 px-4 py-2 text-xs tracking-[0.2em] text-purple-200 backdrop-blur-xl">
+          <div
+            className={`
+              mb-4
+              inline-flex
+              items-center
+              rounded-full
+              border
+              px-4
+              py-2
+              text-xs
+              tracking-[0.2em]
+              backdrop-blur-xl
+              ${currentMode.accent}
+            `}
+          >
 
-            AI PERSONALITY PLATFORM
+            {currentMode.label}
 
           </div>
 
@@ -359,9 +490,7 @@ ${current.tags}
 
           <p className="mt-5 leading-relaxed text-zinc-400">
 
-            把你的情緒、
-            <br />
-            變成朋友會想截圖的版本
+            {currentMode.description}
 
           </p>
 
@@ -442,68 +571,6 @@ ${current.tags}
 
         </div>
 
-        {/* Community CTA */}
-        <div className="mt-8 w-full rounded-[32px] border border-white/10 bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-6 backdrop-blur-2xl">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <div className="text-sm tracking-[0.25em] text-purple-200/70">
-                COMMUNITY
-              </div>
-
-              <h2 className="mt-3 text-2xl font-black leading-tight">
-                超過 32 萬人
-                <br />
-                正在分享人格卡
-              </h2>
-
-            </div>
-
-            <div className="rounded-full bg-white/10 px-3 py-2 text-xs text-white/70">
-              HOT
-            </div>
-
-          </div>
-
-          <div className="mt-5 flex items-center gap-2">
-
-            <div className="flex -space-x-3">
-
-              {[1, 2, 3, 4].map(
-                (item) => (
-                  <div
-                    key={item}
-                    className="
-                      flex
-                      h-10
-                      w-10
-                      items-center
-                      justify-center
-                      rounded-full
-                      border
-                      border-white/10
-                      bg-white/10
-                      text-sm
-                      backdrop-blur
-                    "
-                  >
-                    ✦
-                  </div>
-                )
-              )}
-
-            </div>
-
-            <div className="ml-3 text-sm text-white/70">
-              今天已新增 8,421 張人格卡
-            </div>
-
-          </div>
-
-        </div>
-
         {/* Mode */}
         <div className="mt-10 w-full">
 
@@ -535,18 +602,7 @@ ${current.tags}
             onClick={
               generateVersion
             }
-          />
-
-        </div>
-
-        {/* Template */}
-        <div className="mt-6">
-
-          <TemplateSelector
-            current={template}
-            onChange={
-              setTemplate
-            }
+            mode={mode}
           />
 
         </div>
@@ -701,6 +757,43 @@ ${current.tags}
             text={shareText}
           />
 
+          <button
+            onClick={
+              toggleFavorite
+            }
+            className={`
+              rounded-2xl
+              border
+              px-5
+              py-3
+              text-sm
+              font-semibold
+              transition-all
+              duration-300
+              backdrop-blur-xl
+              ${
+                isFavorited
+                  ? `
+                    border-pink-400/40
+                    bg-pink-500/20
+                    text-pink-100
+                  `
+                  : `
+                    border-white/10
+                    bg-white/5
+                    text-white/80
+                    hover:bg-white/10
+                  `
+              }
+            `}
+          >
+
+            {isFavorited
+              ? "💖 已收藏"
+              : "🤍 收藏人格"}
+
+          </button>
+
         </div>
 
         {/* CTA */}
@@ -729,29 +822,130 @@ ${current.tags}
 
         </button>
 
-        {/* Social Proof */}
-        <div className="mt-10 w-full rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+        {/* Favorites */}
+        <div className="mt-12 w-full">
 
-          <div className="flex items-center justify-between">
+          <div className="mb-5 flex items-center justify-between">
 
             <div>
 
-              <div className="text-lg font-bold">
-                朋友都在玩的 AI 人格
+              <div className="text-lg font-bold text-white">
+                收藏人格
               </div>
 
-              <div className="mt-2 text-sm leading-relaxed text-zinc-400">
-                越多人分享，
-                越容易看到自己的另一面。
+              <div className="mt-1 text-sm text-zinc-500">
+                你收藏過的 AI 人格版本
               </div>
 
             </div>
 
-            <div className="text-5xl">
-              🫠
+            <div className="rounded-full border border-pink-400/20 bg-pink-500/10 px-3 py-1 text-xs text-pink-100">
+              {favorites.length} Favorites
             </div>
 
           </div>
+
+          {favorites.length === 0 ? (
+
+            <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 text-center backdrop-blur-xl">
+
+              <div className="text-4xl">
+                💫
+              </div>
+
+              <div className="mt-4 text-sm text-zinc-400">
+                你還沒有收藏的人格卡
+              </div>
+
+            </div>
+
+          ) : (
+
+            <div className="space-y-4">
+
+              {favorites.map(
+                (
+                  item
+                ) => (
+
+                  <div
+                    key={item.id}
+                    className="
+                      rounded-[28px]
+                      border
+                      border-white/10
+                      bg-white/5
+                      p-5
+                      backdrop-blur-xl
+                    "
+                  >
+
+                    <div className="flex items-start justify-between gap-4">
+
+                      <div>
+
+                        <div className="text-lg font-bold text-white">
+                          {item.title}
+                        </div>
+
+                        <div className="mt-2 text-sm text-zinc-400">
+                          {item.tags}
+                        </div>
+
+                        <div className="mt-3 text-xs text-zinc-500">
+                          收藏於 {item.createdAt}
+                        </div>
+
+                      </div>
+
+                      <button
+                        onClick={() => {
+
+                          const filtered =
+                            favorites.filter(
+                              (
+                                favorite
+                              ) =>
+                                favorite.id !==
+                                item.id
+                            );
+
+                          setFavorites(
+                            filtered
+                          );
+
+                          localStorage.setItem(
+                            "thisme-favorites",
+                            JSON.stringify(
+                              filtered
+                            )
+                          );
+                        }}
+                        className="
+                          rounded-full
+                          border
+                          border-white/10
+                          bg-white/5
+                          px-3
+                          py-2
+                          text-xs
+                          text-white/70
+                          transition-all
+                          hover:bg-red-500/20
+                          hover:text-red-100
+                        "
+                      >
+                        移除
+                      </button>
+
+                    </div>
+
+                  </div>
+                )
+              )}
+
+            </div>
+          )}
 
         </div>
 

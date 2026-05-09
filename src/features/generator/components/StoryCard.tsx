@@ -18,6 +18,8 @@ type Props = {
   tags?: string;
 
   template: string;
+
+  isFavorite?: boolean;
 };
 
 const StoryCard = forwardRef<
@@ -30,6 +32,7 @@ const StoryCard = forwardRef<
   friends,
   tags,
   template,
+  isFavorite = false,
 }, ref) => {
 
   const currentMode =
@@ -68,13 +71,38 @@ const StoryCard = forwardRef<
         overflow-hidden
         rounded-[42px]
         border
-        border-white/10
         bg-gradient-to-br
         ${gradient}
         p-8
-        shadow-[0_30px_120px_rgba(0,0,0,0.6)]
+        transition-all
+        duration-500
+        ${
+          isFavorite
+            ? `
+              border-yellow-300/30
+              shadow-[0_0_120px_rgba(251,191,36,0.18)]
+            `
+            : `
+              border-white/10
+              shadow-[0_30px_120px_rgba(0,0,0,0.6)]
+            `
+        }
       `}
     >
+
+      {/* Favorite Glow */}
+      {isFavorite && (
+        <div
+          className="
+            absolute
+            inset-0
+            rounded-[42px]
+            ring-1
+            ring-yellow-300/20
+            shadow-[inset_0_0_80px_rgba(251,191,36,0.08)]
+          "
+        />
+      )}
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/20" />
@@ -85,6 +113,15 @@ const StoryCard = forwardRef<
       <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-pink-500/10 blur-3xl" />
 
       <div className="absolute top-1/2 -left-10 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl" />
+
+      {/* Favorite Glow */}
+      {isFavorite && (
+        <>
+          <div className="absolute right-0 top-0 h-56 w-56 rounded-full bg-yellow-300/10 blur-3xl" />
+
+          <div className="absolute bottom-10 left-0 h-48 w-48 rounded-full bg-amber-200/10 blur-3xl" />
+        </>
+      )}
 
       {/* Noise */}
       <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
@@ -117,6 +154,27 @@ const StoryCard = forwardRef<
               {currentMode?.trending && (
                 <div className="rounded-full border border-pink-400/20 bg-pink-500/20 px-3 py-1 text-[10px] font-bold tracking-[0.2em] text-pink-100 backdrop-blur">
                   HOT
+                </div>
+              )}
+
+              {/* Saved Badge */}
+              {isFavorite && (
+                <div
+                  className="
+                    rounded-full
+                    border
+                    border-yellow-300/20
+                    bg-yellow-400/15
+                    px-3
+                    py-1
+                    text-[10px]
+                    font-bold
+                    tracking-[0.2em]
+                    text-yellow-100
+                    backdrop-blur
+                  "
+                >
+                  SAVED
                 </div>
               )}
 
@@ -274,17 +332,35 @@ const StoryCard = forwardRef<
 
           <div className="text-right">
 
-            <div className="text-[10px] uppercase tracking-[0.24em] text-white/40">
-              Share Your Version
-            </div>
+            {isFavorite ? (
+              <>
+                <div className="text-[10px] uppercase tracking-[0.24em] text-yellow-100/60">
+                  Saved Personality
+                </div>
 
-            <div className="mt-1 text-sm text-white/75">
-              AI Personality Card
-            </div>
+                <div className="mt-1 text-sm text-yellow-50/90">
+                  收藏中的人格卡
+                </div>
 
-            <div className="mt-2 text-xs text-white/40">
-              @thisme.ai
-            </div>
+                <div className="mt-2 text-xs text-yellow-100/50">
+                  ★ Favorite Collection
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-[10px] uppercase tracking-[0.24em] text-white/40">
+                  Share Your Version
+                </div>
+
+                <div className="mt-1 text-sm text-white/75">
+                  AI Personality Card
+                </div>
+
+                <div className="mt-2 text-xs text-white/40">
+                  @thisme.ai
+                </div>
+              </>
+            )}
 
           </div>
 
