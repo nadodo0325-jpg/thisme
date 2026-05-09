@@ -1,43 +1,65 @@
-export type PersonalityCard = {
+export type HistoryItem = {
   title: string;
 
-  love: string;
+  text: string;
 
-  dark: string;
-
-  friends: string;
-
-  tags?: string;
+  createdAt: string;
 };
 
-export type FavoritePersonality = {
+export type FavoriteItem = {
   id: string;
 
-  card: PersonalityCard;
+  title: string;
+
+  tags?: string;
 
   mode: string;
 
   createdAt: string;
 };
 
-export type PublicPersonalityPost = {
+export type TrendingPersonality = {
   id: string;
 
-  author?: string;
+  title: string;
+
+  emoji: string;
+
+  users: string;
+
+  shares: string;
 
   mode: string;
+
+  viral: boolean;
+
+  description: string;
+
+  tags: string[];
+
+  input: string;
+};
+
+export type PublicPersonality = {
+  id: string;
+
+  title: string;
+
+  description: string;
+
+  mode: string;
+
+  tags: string[];
 
   likes: number;
 
+  shares: number;
+
   createdAt: string;
 
-  card: PersonalityCard;
-};
+  username?: string;
 
-export type PersonalityMode =
-  | "love"
-  | "dark"
-  | "friends"
-  | "roast"
-  | "mbti"
-  | "pastlife";
+  avatar?: string;
+
+  verified?: boolean;
+};

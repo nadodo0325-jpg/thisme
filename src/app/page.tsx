@@ -16,6 +16,8 @@ import CopyButton from "@/features/generator/components/CopyButton";
 import StoryCard from "@/features/generator/components/StoryCard";
 import HistoryList from "@/features/generator/components/HistoryList";
 
+import TrendingFeed from "@/features/feed/components/TrendingFeed";
+
 import ModeSelector from "@/components/ModeSelector";
 
 import { modes } from "@/lib/modes";
@@ -24,6 +26,14 @@ import {
   parseResponse,
   PersonalityCard,
 } from "@/features/generator/utils/parseResponse";
+
+import {
+  trendingFeed,
+} from "@/features/feed/data/trendingFeed";
+
+import type {
+  TrendingPersonality,
+} from "@/features/generator/types";
 
 type HistoryItem = {
   title: string;
@@ -340,6 +350,25 @@ ${firstCard.friends}
       }
     };
 
+  const loadTrendingPersonality =
+    (
+      item: TrendingPersonality
+    ) => {
+
+      setMode(
+        item.mode
+      );
+
+      setInput(
+        item.input
+      );
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    };
+
   const downloadStory =
     async () => {
 
@@ -571,6 +600,18 @@ ${current.tags}
 
         </div>
 
+        {/* NEW SOCIAL FEED */}
+        <div className="mt-12 w-full">
+
+          <TrendingFeed
+            items={trendingFeed}
+            onSelect={
+              loadTrendingPersonality
+            }
+          />
+
+        </div>
+
         {/* Mode */}
         <div className="mt-10 w-full">
 
@@ -603,6 +644,7 @@ ${current.tags}
               generateVersion
             }
             mode={mode}
+            loading={loading}
           />
 
         </div>
@@ -630,7 +672,6 @@ ${current.tags}
         {/* Story */}
         <div className="relative mt-12 flex w-full items-center justify-center">
 
-          {/* Left */}
           {cards.length > 1 && (
             <button
               onClick={prevCard}
@@ -676,11 +717,13 @@ ${current.tags}
               friends={current.friends}
               tags={current.tags}
               template={mode}
+              isFavorite={
+                isFavorited
+              }
             />
 
           </div>
 
-          {/* Right */}
           {cards.length > 1 && (
             <button
               onClick={nextCard}
