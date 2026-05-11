@@ -2,12 +2,30 @@
 
 import { motion } from "framer-motion";
 
+import {
+  useEffect,
+  useState,
+} from "react";
+
 import ResultActions from "@/features/persona/components/ResultActions";
 
 import { usePersonaStore } from "@/stores/personaStore";
 
 export default function ResultPage() {
   const { persona } = usePersonaStore();
+
+  const [hydrated, setHydrated] =
+    useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) {
+    return (
+      <main className="min-h-screen bg-black" />
+    );
+  }
 
   if (!persona) {
     return (
