@@ -4,15 +4,18 @@ import { motion } from "framer-motion";
 
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import ResultActions from "@/features/persona/components/ResultActions";
 
-import { usePersonaStore } from "@/stores/personaStore";
+import { generatePersona } from "@/features/persona/engine/personaEngine";
+
+import { useFluxStore } from "@/stores/fluxStore";
 
 export default function ResultPage() {
-  const { persona } = usePersonaStore();
+  const { vector } = useFluxStore();
 
   const [hydrated, setHydrated] =
     useState(false);
@@ -21,17 +24,13 @@ export default function ResultPage() {
     setHydrated(true);
   }, []);
 
+  const persona = useMemo(() => {
+    return generatePersona(vector);
+  }, [vector]);
+
   if (!hydrated) {
     return (
       <main className="min-h-screen bg-black" />
-    );
-  }
-
-  if (!persona) {
-    return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        No persona generated.
-      </main>
     );
   }
 
