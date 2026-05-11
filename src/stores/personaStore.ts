@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import { persist } from "zustand/middleware";
+
 import { PersonaState } from "@/features/persona/types/persona";
 
 type PersonaStore = {
@@ -11,9 +13,17 @@ type PersonaStore = {
 };
 
 export const usePersonaStore =
-  create<PersonaStore>((set) => ({
-    persona: null,
+  create<PersonaStore>()(
+    persist(
+      (set) => ({
+        persona: null,
 
-    setPersona: (persona) =>
-      set({ persona }),
-  }));
+        setPersona: (persona) =>
+          set({ persona }),
+      }),
+
+      {
+        name: "fluxy-persona",
+      }
+    )
+  );

@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import { persist } from "zustand/middleware";
+
 type EmotionVector = {
   loneliness: number;
   anxiety: number;
@@ -30,54 +32,62 @@ const initialVector: EmotionVector = {
 };
 
 export const useFluxStore =
-  create<FluxStore>((set) => ({
-    emotions: [],
-
-    vector: initialVector,
-
-    addEmotion: (id, weights) => {
-      let updatedVector: EmotionVector =
-        initialVector;
-
-      set((state) => {
-        updatedVector = {
-          loneliness:
-            state.vector.loneliness +
-            (weights.loneliness || 0),
-
-          anxiety:
-            state.vector.anxiety +
-            (weights.anxiety || 0),
-
-          validation:
-            state.vector.validation +
-            (weights.validation || 0),
-
-          intimacy:
-            state.vector.intimacy +
-            (weights.intimacy || 0),
-
-          avoidance:
-            state.vector.avoidance +
-            (weights.avoidance || 0),
-        };
-
-        return {
-          emotions: [
-            ...state.emotions,
-            id,
-          ],
-
-          vector: updatedVector,
-        };
-      });
-
-      return updatedVector;
-    },
-
-    reset: () =>
-      set({
+  create<FluxStore>()(
+    persist(
+      (set) => ({
         emotions: [],
+
         vector: initialVector,
+
+        addEmotion: (id, weights) => {
+          let updatedVector: EmotionVector =
+            initialVector;
+
+          set((state) => {
+            updatedVector = {
+              loneliness:
+                state.vector.loneliness +
+                (weights.loneliness || 0),
+
+              anxiety:
+                state.vector.anxiety +
+                (weights.anxiety || 0),
+
+              validation:
+                state.vector.validation +
+                (weights.validation || 0),
+
+              intimacy:
+                state.vector.intimacy +
+                (weights.intimacy || 0),
+
+              avoidance:
+                state.vector.avoidance +
+                (weights.avoidance || 0),
+            };
+
+            return {
+              emotions: [
+                ...state.emotions,
+                id,
+              ],
+
+              vector: updatedVector,
+            };
+          });
+
+          return updatedVector;
+        },
+
+        reset: () =>
+          set({
+            emotions: [],
+            vector: initialVector,
+          }),
       }),
-  }));
+
+      {
+        name: "fluxy-emotions",
+      }
+    )
+  );
