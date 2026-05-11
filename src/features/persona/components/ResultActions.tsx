@@ -3,20 +3,18 @@
 import { useRouter } from "next/navigation";
 
 import { useFluxStore } from "@/stores/fluxStore";
-import { usePersonaStore } from "@/stores/personaStore";
 
 export default function ResultActions() {
   const router = useRouter();
 
   const { reset } = useFluxStore();
 
-  const { setPersona } =
-    usePersonaStore();
-
   function handleRestart() {
     reset();
 
-    setPersona(null);
+    localStorage.removeItem(
+      "fluxy-emotions"
+    );
 
     router.push("/flux");
   }
