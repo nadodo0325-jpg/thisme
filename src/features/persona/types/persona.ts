@@ -12,4 +12,10 @@ export type PersonaState = {
   energy: EnergyLevel;
 
   description: string;
+
+  quote: string;
+
+  gradient: string;
+
+  accent: string;
 };

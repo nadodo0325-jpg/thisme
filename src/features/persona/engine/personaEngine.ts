@@ -24,6 +24,14 @@ export function generatePersona(
 
       description:
         "Quiet, emotional, reflective.",
+
+      quote:
+        "You feel everything deeply, even the things you never say out loud.",
+
+      gradient:
+        "from-indigo-950 via-black to-black",
+
+      accent: "text-indigo-300",
     };
   }
 
@@ -37,6 +45,14 @@ export function generatePersona(
 
       description:
         "Emotionally distant but observant.",
+
+      quote:
+        "You disappear before people can leave you first.",
+
+      gradient:
+        "from-zinc-900 via-black to-black",
+
+      accent: "text-zinc-300",
     };
   }
 
@@ -49,5 +65,13 @@ export function generatePersona(
 
     description:
       "Warm, emotional, hopeful.",
+
+    quote:
+      "Even after everything, you still choose softness.",
+
+    gradient:
+      "from-rose-950 via-black to-black",
+
+    accent: "text-rose-300",
   };
 }

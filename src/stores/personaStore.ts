@@ -6,7 +6,7 @@ type PersonaStore = {
   persona: PersonaState | null;
 
   setPersona: (
-    persona: PersonaState
+    persona: PersonaState | null
   ) => void;
 };
 
