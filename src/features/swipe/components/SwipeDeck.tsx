@@ -74,6 +74,13 @@ export default function SwipeDeck() {
     useState(false);
 
   /*
+    prevent restore loop
+  */
+
+  const [hasRestored, setHasRestored] =
+    useState(false);
+
+  /*
     hydration
   */
 
@@ -82,14 +89,22 @@ export default function SwipeDeck() {
   }, []);
 
   /*
-    restore progress
+    restore progress only once
   */
 
   useEffect(() => {
     if (!hydrated) return;
 
+    if (hasRestored) return;
+
     setIndex(emotions.length);
-  }, [hydrated, emotions.length]);
+
+    setHasRestored(true);
+  }, [
+    hydrated,
+    emotions.length,
+    hasRestored,
+  ]);
 
   /*
     rotating live feed
@@ -195,9 +210,14 @@ export default function SwipeDeck() {
       final transition
     */
 
-    if (nextIndex >= emotionCards.length) {
+    if (
+      nextIndex >=
+      emotionCards.length
+    ) {
       setTimeout(() => {
-        router.push("/result");
+        router.push(
+          "/flux/result"
+        );
       }, 1700);
 
       return;
@@ -357,8 +377,11 @@ export default function SwipeDeck() {
               backdrop-blur-xl
             "
           >
-            {index + 1}/
-            {emotionCards.length}
+            {Math.min(
+              index + 1,
+              emotionCards.length
+            )}
+            /{emotionCards.length}
           </div>
         </div>
 
