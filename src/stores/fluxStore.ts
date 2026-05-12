@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import { persist } from "zustand/middleware";
 
-type EmotionVector = {
+export type EmotionVector = {
   loneliness: number;
   anxiety: number;
   validation: number;
@@ -23,13 +23,14 @@ type FluxStore = {
   reset: () => void;
 };
 
-const initialVector: EmotionVector = {
-  loneliness: 0,
-  anxiety: 0,
-  validation: 0,
-  intimacy: 0,
-  avoidance: 0,
-};
+const createInitialVector =
+  (): EmotionVector => ({
+    loneliness: 0,
+    anxiety: 0,
+    validation: 0,
+    intimacy: 0,
+    avoidance: 0,
+  });
 
 export const useFluxStore =
   create<FluxStore>()(
@@ -37,13 +38,26 @@ export const useFluxStore =
       (set) => ({
         emotions: [],
 
-        vector: initialVector,
+        vector: createInitialVector(),
 
         addEmotion: (id, weights) => {
-          let updatedVector: EmotionVector =
-            initialVector;
+          let updatedVector =
+            createInitialVector();
 
           set((state) => {
+            /*
+              prevent duplicate swipe
+            */
+
+            if (
+              state.emotions.includes(id)
+            ) {
+              updatedVector =
+                state.vector;
+
+              return state;
+            }
+
             updatedVector = {
               loneliness:
                 state.vector.loneliness +
@@ -82,7 +96,8 @@ export const useFluxStore =
         reset: () =>
           set({
             emotions: [],
-            vector: initialVector,
+            vector:
+              createInitialVector(),
           }),
       }),
 

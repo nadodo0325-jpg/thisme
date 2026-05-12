@@ -1,55 +1,22 @@
-"use client";
+import SwipeDeck from "@/features/swipe/components/SwipeDeck";
 
-import { motion } from "framer-motion";
-
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-
-import ResultActions from "@/features/persona/components/ResultActions";
-
-import { generatePersona } from "@/features/persona/engine/personaEngine";
-
-import { useFluxStore } from "@/stores/fluxStore";
-
-export default function ResultPage() {
-  const { vector } = useFluxStore();
-
-  const [hydrated, setHydrated] =
-    useState(false);
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
-  const persona = useMemo(() => {
-    return generatePersona(vector);
-  }, [vector]);
-
-  if (!hydrated) {
-    return (
-      <main className="min-h-screen bg-black" />
-    );
-  }
-
+export default function FluxPage() {
   return (
     <main
-      className={`
+      className="
         min-h-screen
-        bg-gradient-to-b
-        ${persona.gradient}
+        bg-black
         text-white
-        relative
         overflow-hidden
+        relative
         flex
+        flex-col
         items-center
         justify-center
-        px-6
-      `}
+        px-4
+      "
     >
-      {/* AURA */}
+      {/* BACKGROUND */}
 
       <div
         className="
@@ -64,126 +31,20 @@ export default function ResultPage() {
 
       {/* CONTENT */}
 
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 40,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 0.8,
-        }}
-        className="
-          relative
-          z-10
-          max-w-xl
-          text-center
-        "
-      >
-        {/* LABEL */}
+      <div className="relative z-10">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold tracking-tight">
+            Enter Your Flux
+          </h1>
 
-        <p
-          className="
-            uppercase
-            tracking-[0.3em]
-            text-sm
-            text-zinc-500
-            mb-6
-          "
-        >
-          Your Emotional Archetype
-        </p>
-
-        {/* TITLE */}
-
-        <h1
-          className={`
-            text-6xl
-            md:text-7xl
-            font-bold
-            tracking-tight
-            mb-6
-            ${persona.accent}
-          `}
-        >
-          {persona.archetype}
-        </h1>
-
-        {/* DESCRIPTION */}
-
-        <p
-          className="
-            text-xl
-            text-zinc-300
-            leading-relaxed
-            mb-12
-          "
-        >
-          {persona.description}
-        </p>
-
-        {/* QUOTE CARD */}
-
-        <div
-          className="
-            border
-            border-white/10
-            bg-white/5
-            backdrop-blur-xl
-            rounded-[32px]
-            p-8
-          "
-        >
-          <p
-            className="
-              text-2xl
-              leading-relaxed
-              font-light
-            "
-          >
-            “{persona.quote}”
+          <p className="text-zinc-500 mt-4">
+            Swipe what resonates with your
+            current emotional state.
           </p>
         </div>
 
-        {/* ENERGY */}
-
-        <div className="mt-10">
-          <p className="text-zinc-500 text-sm mb-3">
-            Emotional Energy
-          </p>
-
-          <div className="flex justify-center gap-2">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className={`
-                  h-2
-                  w-16
-                  rounded-full
-
-                  ${
-                    i <=
-                    (persona.energy ===
-                    "high"
-                      ? 3
-                      : persona.energy ===
-                        "medium"
-                      ? 2
-                      : 1)
-                      ? "bg-white"
-                      : "bg-white/10"
-                  }
-                `}
-              />
-            ))}
-          </div>
-        </div>
-
-        <ResultActions />
-      </motion.div>
+        <SwipeDeck />
+      </div>
     </main>
   );
 }

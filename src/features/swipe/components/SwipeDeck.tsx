@@ -1,7 +1,12 @@
 "use client";
 
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
 
 import { motion } from "framer-motion";
 
@@ -10,20 +15,36 @@ import { emotionCards } from "../data/emotions";
 import SwipeCard from "./SwipeCard";
 
 import { useFluxStore } from "@/stores/fluxStore";
-import { usePersonaStore } from "@/stores/personaStore";
-
-import { generatePersona } from "@/features/persona/engine/personaEngine";
 
 export default function SwipeDeck() {
   const router = useRouter();
 
+  const {
+    addEmotion,
+    vector,
+    emotions,
+  } = useFluxStore();
+
   const [index, setIndex] = useState(0);
 
-  const { addEmotion, vector } =
-    useFluxStore();
+  const [hydrated, setHydrated] =
+    useState(false);
 
-  const { setPersona } =
-    usePersonaStore();
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  /*
+    IMPORTANT
+
+    restore swipe progress
+  */
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    setIndex(emotions.length);
+  }, [hydrated, emotions.length]);
 
   const currentCard =
     emotionCards[index];
@@ -44,10 +65,8 @@ export default function SwipeDeck() {
   ) {
     if (!currentCard) return;
 
-    let updatedVector = vector;
-
     if (direction === "right") {
-      updatedVector = addEmotion(
+      addEmotion(
         currentCard.id,
         currentCard.weights
       );
@@ -55,15 +74,14 @@ export default function SwipeDeck() {
 
     const nextIndex = index + 1;
 
+    /*
+      FINISHED
+    */
+
     if (nextIndex >= emotionCards.length) {
-      const persona =
-        generatePersona(updatedVector);
-
-      setPersona(persona);
-
       setTimeout(() => {
         router.push("/flux/result");
-      }, 300);
+      }, 250);
 
       return;
     }
@@ -71,7 +89,25 @@ export default function SwipeDeck() {
     setIndex(nextIndex);
   }
 
-  if (!currentCard) return null;
+  /*
+    hydration guard
+  */
+
+  if (!hydrated) {
+    return null;
+  }
+
+  /*
+    all cards completed
+  */
+
+  if (!currentCard) {
+    return (
+      <div className="text-zinc-500">
+        Redirecting...
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center">
@@ -84,8 +120,11 @@ export default function SwipeDeck() {
           </span>
 
           <span>
-            {index + 1}/
-            {emotionCards.length}
+            {Math.min(
+              index + 1,
+              emotionCards.length
+            )}
+            /{emotionCards.length}
           </span>
         </div>
 
@@ -93,6 +132,9 @@ export default function SwipeDeck() {
           <motion.div
             animate={{
               width: `${progress}%`,
+            }}
+            transition={{
+              duration: 0.25,
             }}
             className="h-full bg-white"
           />

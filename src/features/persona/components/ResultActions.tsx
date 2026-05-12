@@ -10,13 +10,26 @@ export default function ResultActions() {
   const { reset } = useFluxStore();
 
   function handleRestart() {
+    /*
+      reset zustand state
+    */
+
     reset();
 
-    localStorage.removeItem(
-      "fluxy-emotions"
-    );
+    /*
+      clear persist storage
+    */
 
-    router.push("/flux");
+    localStorage.clear();
+
+    /*
+      small delay
+      prevents hydration race conditions
+    */
+
+    setTimeout(() => {
+      router.push("/flux");
+    }, 100);
   }
 
   return (
