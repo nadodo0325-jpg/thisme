@@ -19,6 +19,25 @@ import SwipeCard from "./SwipeCard";
 
 import { useFluxStore } from "@/stores/fluxStore";
 
+const liveStats = [
+  "今晚最多人卡住的情緒是『已讀不回』",
+  "72% people paused before swiping",
+  "凌晨 1:43 是情緒活躍高峰",
+  "avoidance energy 正在快速上升",
+  "這週最多人害怕的是『突然冷淡』",
+  "很多人其實沒有看起來那麼穩定",
+];
+
+const dynamicMessages = [
+  "很多人其實也有一樣的情緒",
+  "AI 正在拼湊你的 emotional pattern",
+  "你開始露出真正的自己了",
+  "有些情緒其實藏不住",
+  "你的情緒輪廓越來越清晰",
+  "你滑動的速度也透露了很多事",
+  "有些選擇，比你以為的更真實",
+];
+
 export default function SwipeDeck() {
   const router = useRouter();
 
@@ -34,11 +53,18 @@ export default function SwipeDeck() {
     useState(false);
 
   /*
-    AI reaction
+    ai reaction
   */
 
   const [aiMessage, setAiMessage] =
     useState("");
+
+  /*
+    live world feeling
+  */
+
+  const [liveMessage, setLiveMessage] =
+    useState(liveStats[0]);
 
   /*
     transition lock
@@ -65,6 +91,28 @@ export default function SwipeDeck() {
     setIndex(emotions.length);
   }, [hydrated, emotions.length]);
 
+  /*
+    rotating live feed
+  */
+
+  useEffect(() => {
+    const interval =
+      setInterval(() => {
+        const random =
+          Math.floor(
+            Math.random() *
+              liveStats.length
+          );
+
+        setLiveMessage(
+          liveStats[random]
+        );
+      }, 3600);
+
+    return () =>
+      clearInterval(interval);
+  }, []);
+
   const currentCard =
     emotionCards[index];
 
@@ -77,7 +125,7 @@ export default function SwipeDeck() {
 
   const progress = useMemo(() => {
     return (
-      ((index + 1) /
+      (index /
         emotionCards.length) *
       100
     );
@@ -90,10 +138,6 @@ export default function SwipeDeck() {
   function handleSwipe(
     direction: "left" | "right"
   ) {
-    /*
-      prevent double swipe bug
-    */
-
     if (
       !currentCard ||
       isTransitioning
@@ -115,7 +159,7 @@ export default function SwipeDeck() {
     }
 
     /*
-      AI reply
+      ai reply
     */
 
     const reply =
@@ -129,6 +173,22 @@ export default function SwipeDeck() {
       setAiMessage(reply);
     }
 
+    /*
+      dynamic live feeling
+    */
+
+    const randomDynamic =
+      dynamicMessages[
+        Math.floor(
+          Math.random() *
+            dynamicMessages.length
+        )
+      ];
+
+    setLiveMessage(
+      randomDynamic
+    );
+
     const nextIndex = index + 1;
 
     /*
@@ -137,14 +197,14 @@ export default function SwipeDeck() {
 
     if (nextIndex >= emotionCards.length) {
       setTimeout(() => {
-        router.push("/flux/result");
-      }, 1400);
+        router.push("/result");
+      }, 1700);
 
       return;
     }
 
     /*
-      cinematic pacing
+      pacing
     */
 
     setTimeout(() => {
@@ -153,7 +213,7 @@ export default function SwipeDeck() {
       setIndex(nextIndex);
 
       setIsTransitioning(false);
-    }, 950);
+    }, 900);
   }
 
   /*
@@ -170,39 +230,145 @@ export default function SwipeDeck() {
 
   if (!currentCard) {
     return (
-      <div className="text-zinc-500">
-        Entering result...
+      <div className="text-white/30">
+        generating result...
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex w-full flex-col items-center">
+      {/* LIVE BAR */}
+
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: -10,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        className="
+          mb-5
+          flex
+          w-full
+          max-w-[360px]
+          items-center
+          gap-3
+          rounded-full
+          border
+          border-white/10
+          bg-white/[0.04]
+          px-4
+          py-2.5
+          backdrop-blur-2xl
+        "
+      >
+        <div
+          className="
+            relative
+            flex
+            items-center
+            justify-center
+          "
+        >
+          <div className="h-2 w-2 rounded-full bg-emerald-400" />
+
+          <div
+            className="
+              absolute
+              h-2
+              w-2
+              rounded-full
+              bg-emerald-400
+              animate-ping
+            "
+          />
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={liveMessage}
+            initial={{
+              opacity: 0,
+              y: 6,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              y: -6,
+            }}
+            transition={{
+              duration: 0.35,
+            }}
+            className="
+              text-[11px]
+              tracking-[0.12em]
+              text-white/45
+            "
+          >
+            {liveMessage}
+          </motion.p>
+        </AnimatePresence>
+      </motion.div>
+
       {/* PROGRESS */}
 
-      <div className="w-[340px] mb-8">
-        <div className="flex justify-between text-xs text-zinc-500 mb-2 tracking-wide">
-          <span>
-            情緒掃描中
-          </span>
+      <div className="mb-6 w-full max-w-[360px]">
+        <div
+          className="
+            mb-3
+            flex
+            items-center
+            justify-between
+          "
+        >
+          <div>
+            <p
+              className="
+                text-[11px]
+                uppercase
+                tracking-[0.22em]
+                text-white/25
+              "
+            >
+              emotional scan
+            </p>
 
-          <span>
-            {Math.min(
-              index + 1,
-              emotionCards.length
-            )}
-            /{emotionCards.length}
-          </span>
+            <p className="mt-1 text-xs text-white/35">
+              AI 正在讀取你的情緒偏移
+            </p>
+          </div>
+
+          <div
+            className="
+              rounded-full
+              border
+              border-white/10
+              bg-white/[0.03]
+              px-3
+              py-1
+              text-xs
+              text-white/35
+              backdrop-blur-xl
+            "
+          >
+            {index + 1}/
+            {emotionCards.length}
+          </div>
         </div>
 
         <div
           className="
-            h-[6px]
-            bg-zinc-900
-            rounded-full
+            relative
+            h-[8px]
             overflow-hidden
-            border
-            border-zinc-800
+            rounded-full
+            bg-white/[0.05]
           "
         >
           <motion.div
@@ -210,20 +376,46 @@ export default function SwipeDeck() {
               width: `${progress}%`,
             }}
             transition={{
-              duration: 0.35,
+              duration: 0.45,
               ease: "easeOut",
             }}
             className="
+              absolute
+              left-0
+              top-0
               h-full
+              rounded-full
               bg-white
+            "
+          />
+
+          <motion.div
+            animate={{
+              x: [
+                "-20%",
+                "120%",
+              ],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 2.2,
+              ease: "linear",
+            }}
+            className="
+              absolute
+              top-0
+              h-full
+              w-[20%]
+              bg-white/30
+              blur-md
             "
           />
         </div>
       </div>
 
-      {/* AI MESSAGE */}
+      {/* AI FEELING */}
 
-      <div className="h-[64px] mb-2 flex items-center justify-center">
+      <div className="mb-4 flex h-[82px] items-center justify-center">
         <AnimatePresence mode="wait">
           {aiMessage && (
             <motion.div
@@ -231,85 +423,113 @@ export default function SwipeDeck() {
               initial={{
                 opacity: 0,
                 y: 10,
+                scale: 0.96,
                 filter:
-                  "blur(6px)",
+                  "blur(8px)",
               }}
               animate={{
                 opacity: 1,
                 y: 0,
+                scale: 1,
                 filter:
                   "blur(0px)",
               }}
               exit={{
                 opacity: 0,
                 y: -10,
+                scale: 0.96,
                 filter:
-                  "blur(6px)",
+                  "blur(8px)",
               }}
               transition={{
                 duration: 0.45,
               }}
               className="
-                text-center
-                text-sm
-                text-zinc-400
-                tracking-wide
-                max-w-[280px]
-                leading-relaxed
+                max-w-[320px]
               "
             >
-              {aiMessage}
+              <div
+                className="
+                  relative
+                  overflow-hidden
+                  rounded-[28px]
+                  border
+                  border-white/10
+                  bg-white/[0.045]
+                  px-5
+                  py-4
+                  backdrop-blur-2xl
+                "
+              >
+                <div
+                  className="
+                    absolute
+                    inset-0
+                    bg-gradient-to-r
+                    from-transparent
+                    via-white/[0.04]
+                    to-transparent
+                  "
+                />
+
+                <p
+                  className="
+                    relative
+                    text-center
+                    text-sm
+                    leading-relaxed
+                    tracking-wide
+                    text-white/72
+                  "
+                >
+                  {aiMessage}
+                </p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* STACK */}
+      {/* CARD STACK */}
 
-      <div className="relative w-[340px] h-[540px]">
-        {/* DEPTH CARD 2 */}
+      <div className="relative h-[580px] w-[340px] max-w-full">
+        {/* BACK CARD */}
 
         {nextCard && (
           <motion.div
             animate={{
-              scale: 0.94,
-              y: 18,
-              opacity: 0.35,
-            }}
-            transition={{
-              duration: 0.35,
+              scale: 0.93,
+              y: 22,
+              opacity: 0.22,
             }}
             className="
               absolute
               inset-0
-              rounded-[40px]
-              bg-zinc-950
+              rounded-[44px]
               border
-              border-zinc-900
-              blur-[0.3px]
+              border-white/5
+              bg-white/[0.02]
+              blur-[1px]
             "
           />
         )}
 
-        {/* DEPTH CARD 1 */}
+        {/* MID CARD */}
 
         {nextCard && (
           <motion.div
             animate={{
-              scale: 0.97,
-              y: 8,
-              opacity: 0.6,
-            }}
-            transition={{
-              duration: 0.25,
+              scale: 0.965,
+              y: 10,
+              opacity: 0.45,
             }}
             className="
               absolute
               inset-0
-              rounded-[40px]
-              bg-zinc-900
+              rounded-[44px]
               border
-              border-zinc-800
+              border-white/8
+              bg-white/[0.025]
             "
           />
         )}
@@ -325,7 +545,7 @@ export default function SwipeDeck() {
         </AnimatePresence>
       </div>
 
-      {/* HINTS */}
+      {/* BOTTOM ACTION */}
 
       <motion.div
         initial={{
@@ -340,22 +560,48 @@ export default function SwipeDeck() {
           delay: 0.25,
         }}
         className="
-          mt-8
+          mt-6
           flex
-          gap-10
+          items-center
+          gap-8
           text-sm
-          text-zinc-600
           tracking-wide
+          text-white/28
         "
       >
         <span>
           ← 不像我
         </span>
 
+        <div
+          className="
+            h-1
+            w-1
+            rounded-full
+            bg-white/15
+          "
+        />
+
         <span>
           很像我 →
         </span>
       </motion.div>
+
+      {/* FOOTNOTE */}
+
+      <p
+        className="
+          mt-5
+          text-center
+          text-xs
+          leading-relaxed
+          text-white/16
+        "
+      >
+        每一次滑動，
+        <br />
+        都正在形成你的情緒輪廓。
+      </p>
     </div>
   );
 }

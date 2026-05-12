@@ -3,17 +3,17 @@ import { EmotionCard } from "../types/swipe";
 export const emotionCards: EmotionCard[] =
   [
     {
-      id: "lonely-night",
+      id: "late-night-reply",
 
       vibe: "dreamy",
 
       emoji: "🌙",
 
       text:
-        "You miss people even when you choose to be alone.",
+        "你總是在深夜，突然很想某個人。",
 
       subtext:
-        "Some people learn loneliness so well it starts feeling safe.",
+        "白天能忍住的情緒，到了晚上總會慢慢浮上來。",
 
       weights: {
         loneliness: 3,
@@ -22,28 +22,28 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "You feel absence very deeply.",
+          "你其實比自己想像中更念舊。",
 
         reject:
-          "Maybe you've just gotten good at distancing yourself.",
+          "你只是很習慣把情緒藏到深夜。",
 
         neutral:
-          "You're harder to read than most people.",
+          "有些情緒只有晚上會出現。",
       },
     },
 
     {
-      id: "validation-loop",
+      id: "seen-message",
 
       vibe: "soft",
 
-      emoji: "✨",
+      emoji: "📱",
 
       text:
-        "Being ignored hurts more than you admit.",
+        "被已讀不回時，你會反覆想是不是自己做錯了什麼。",
 
       subtext:
-        "You notice small changes in attention immediately.",
+        "你其實很容易察覺別人情緒的變化。",
 
       weights: {
         validation: 4,
@@ -52,28 +52,28 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "You care more than you pretend to.",
+          "你比大部分人更在意細節。",
 
         reject:
-          "You probably learned not to expect too much.",
+          "你可能只是習慣降低期待。",
 
         neutral:
-          "You keep a lot of reactions hidden.",
+          "你很少真正表現出失落。",
       },
     },
 
     {
-      id: "emotional-avoidance",
+      id: "emotional-distance",
 
       vibe: "dark",
 
       emoji: "🫥",
 
       text:
-        "You disappear when things start feeling real.",
+        "當別人開始太靠近，你反而會想後退。",
 
       subtext:
-        "Avoidance can look a lot like self-protection.",
+        "有時候不是不想靠近，而是太怕失去。",
 
       weights: {
         avoidance: 5,
@@ -81,13 +81,13 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "Running feels safer than staying.",
+          "離開通常比留下更讓你安心。",
 
         reject:
-          "Maybe you just hate emotional pressure.",
+          "你只是需要自己的空間。",
 
         neutral:
-          "You don't fully trust emotional closeness.",
+          "你對情緒靠近一直很敏感。",
       },
     },
 
@@ -99,10 +99,10 @@ export const emotionCards: EmotionCard[] =
       emoji: "🌀",
 
       text:
-        "Your brain replays moments long after everyone else forgot them.",
+        "你會一直重播某些對話，直到睡著。",
 
       subtext:
-        "You revisit emotions more than most people.",
+        "很多別人早就忘記的小事，你卻記很久。",
 
       weights: {
         anxiety: 4,
@@ -110,28 +110,28 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "You carry conversations longer than you should.",
+          "你的大腦很少真正停下來。",
 
         reject:
-          "You might just hide your anxiety better.",
+          "你只是看起來比別人冷靜。",
 
         neutral:
-          "Your mind rarely fully rests.",
+          "你會默默消化很多情緒。",
       },
     },
 
     {
-      id: "hopeless-romantic",
+      id: "romantic-core",
 
       vibe: "dreamy",
 
       emoji: "💫",
 
       text:
-        "Part of you still believes someone will understand you completely.",
+        "即使失望很多次，你還是期待真正的偏愛。",
 
       subtext:
-        "Even after disappointment, you haven't fully given up.",
+        "你從來沒有真的放棄過被理解。",
 
       weights: {
         intimacy: 4,
@@ -140,28 +140,28 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "You still want emotional depth.",
+          "你還是相信真正的靠近存在。",
 
         reject:
-          "Maybe you've stopped expecting people to stay.",
+          "你可能已經開始學會保護自己。",
 
         neutral:
-          "You want connection, but carefully.",
+          "你很渴望穩定的情感連結。",
       },
     },
 
     {
-      id: "silent-anxiety",
+      id: "silent-breakdown",
 
       vibe: "dark",
 
       emoji: "🫠",
 
       text:
-        "You act calm even when you're mentally collapsing.",
+        "你常常一邊正常聊天，一邊偷偷情緒崩潰。",
 
       subtext:
-        "People often mistake your silence for stability.",
+        "很多人以為你很穩，其實不是。",
 
       weights: {
         anxiety: 3,
@@ -170,28 +170,28 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "You hide emotional exhaustion extremely well.",
+          "你太習慣自己消化情緒了。",
 
         reject:
-          "You've probably become numb to stress.",
+          "你可能早就麻痺很久了。",
 
         neutral:
-          "You don't like people seeing you overwhelmed.",
+          "你不喜歡讓人看見脆弱。",
       },
     },
 
     {
-      id: "attachment",
+      id: "fast-attachment",
 
       vibe: "soft",
 
       emoji: "🩶",
 
       text:
-        "You get emotionally attached faster than you want to admit.",
+        "你會很快對一個人產生情緒依賴。",
 
       subtext:
-        "You feel safe with people very quickly.",
+        "你其實很容易把真心放進關係裡。",
 
       weights: {
         intimacy: 3,
@@ -200,13 +200,13 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "You feel emotional shifts immediately.",
+          "你感受到情緒變化的速度很快。",
 
         reject:
-          "Maybe you've become more guarded recently.",
+          "你開始變得比較有防備了。",
 
         neutral:
-          "You try to stay detached, but not completely.",
+          "你一直在控制自己的投入。",
       },
     },
 
@@ -218,10 +218,10 @@ export const emotionCards: EmotionCard[] =
       emoji: "🎭",
 
       text:
-        "Most people don't know how intense your emotions actually are.",
+        "大部分的人，其實不知道你真正的情緒有多重。",
 
       subtext:
-        "You learned how to look okay before you actually were.",
+        "你太早學會『看起來沒事』了。",
 
       weights: {
         loneliness: 2,
@@ -230,28 +230,28 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "You hide depth behind composure.",
+          "你很擅長把情緒藏起來。",
 
         reject:
-          "You don't like being emotionally exposed.",
+          "你不喜歡被看穿。",
 
         neutral:
-          "You reveal yourself very selectively.",
+          "你只會對少數人卸下防備。",
       },
     },
 
     {
-      id: "softness",
+      id: "soft-heart",
 
       vibe: "soft",
 
       emoji: "🤍",
 
       text:
-        "Even after everything, you still choose softness.",
+        "經歷很多事情後，你還是選擇溫柔。",
 
       subtext:
-        "Some people become colder. You didn't.",
+        "不是每個人都能在受傷後還保持柔軟。",
 
       weights: {
         intimacy: 3,
@@ -259,28 +259,28 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "You still believe kindness matters.",
+          "你其實一直都很善良。",
 
         reject:
-          "Maybe softness stopped feeling safe.",
+          "你開始學會保護自己的情緒了。",
 
         neutral:
-          "You protect your softness carefully now.",
+          "你的溫柔變得更安靜了。",
       },
     },
 
     {
-      id: "fear-of-loss",
+      id: "fear-of-losing",
 
       vibe: "dreamy",
 
       emoji: "🌧️",
 
       text:
-        "You get scared people will leave once they know you deeply.",
+        "你很害怕別人在真正了解你後離開。",
 
       subtext:
-        "Being understood feels comforting and terrifying at the same time.",
+        "越靠近的關係，越容易讓你不安。",
 
       weights: {
         anxiety: 2,
@@ -289,13 +289,73 @@ export const emotionCards: EmotionCard[] =
 
       aiReply: {
         resonate:
-          "You expect loss before closeness fully settles.",
+          "你總是提前準備失去。",
 
         reject:
-          "You probably learned emotional distance early.",
+          "你可能很早就習慣獨自承受。",
 
         neutral:
-          "Trust takes a long time for you.",
+          "信任對你來說一直很難。",
+      },
+    },
+
+    {
+      id: "social-exhaustion",
+
+      vibe: "chaotic",
+
+      emoji: "🔕",
+
+      text:
+        "有時候你突然消失，不是討厭誰，只是太累了。",
+
+      subtext:
+        "你需要大量自己的時間恢復情緒。",
+
+      weights: {
+        avoidance: 3,
+        loneliness: 2,
+      },
+
+      aiReply: {
+        resonate:
+          "你一直都在偷偷耗電。",
+
+        reject:
+          "你只是討厭情緒壓力。",
+
+        neutral:
+          "你需要安靜才能恢復自己。",
+      },
+    },
+
+    {
+      id: "attention-shift",
+
+      vibe: "soft",
+
+      emoji: "👀",
+
+      text:
+        "你會立刻感覺到別人對你的態度變了。",
+
+      subtext:
+        "有些細節別人不在意，你卻會記很久。",
+
+      weights: {
+        validation: 3,
+        anxiety: 2,
+      },
+
+      aiReply: {
+        resonate:
+          "你對情緒變化非常敏感。",
+
+        reject:
+          "你可能只是想太多了。",
+
+        neutral:
+          "你很在意關係裡的溫度。",
       },
     },
   ];

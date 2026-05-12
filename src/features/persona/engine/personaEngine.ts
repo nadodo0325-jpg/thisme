@@ -26,17 +26,17 @@ export function generatePersona(
   ) {
     return {
       archetype:
-        "midnight-thinker",
+        "深夜觀察者",
 
       tone: "poetic",
 
       energy: "low",
 
       description:
-        "Quiet, introspective, emotionally deep.",
+        "你總是在安靜裡想很多。表面冷靜，其實情緒比誰都深。",
 
       quote:
-        "You feel everything deeply, even the things you never say out loud.",
+        "你不是不想靠近人，只是太習慣先把自己藏起來。",
 
       gradient:
         "from-indigo-950 via-black to-black",
@@ -55,17 +55,17 @@ export function generatePersona(
   ) {
     return {
       archetype:
-        "detached-ghost",
+        "情緒幽靈",
 
       tone: "cold",
 
       energy: "low",
 
       description:
-        "Emotionally distant but constantly observing.",
+        "你習慣保持距離，總是在離開之前先後退一步。",
 
       quote:
-        "You disappear before people can leave you first.",
+        "你消失的速度，總是比別人靠近你的速度更快。",
 
       gradient:
         "from-zinc-900 via-black to-black",
@@ -84,17 +84,17 @@ export function generatePersona(
   ) {
     return {
       archetype:
-        "validation-chaser",
+        "被需要成癮者",
 
       tone: "chaotic",
 
       energy: "high",
 
       description:
-        "You crave connection, attention, and emotional reassurance.",
+        "你很在意別人的情緒，也害怕自己不被需要。",
 
       quote:
-        "Silence feels louder when you need to feel seen.",
+        "有時候你想要的不是答案，只是有人願意看見你。",
 
       gradient:
         "from-fuchsia-950 via-black to-black",
@@ -113,17 +113,17 @@ export function generatePersona(
   ) {
     return {
       archetype:
-        "hope-romantic",
+        "浪漫倖存者",
 
       tone: "soft",
 
       energy: "medium",
 
       description:
-        "Warm, affectionate, and emotionally available.",
+        "即使失望過很多次，你還是相信真正的靠近存在。",
 
       quote:
-        "Even after disappointment, you still believe closeness is worth it.",
+        "你還願意相信愛，本身就已經很勇敢了。",
 
       gradient:
         "from-rose-950 via-black to-black",
@@ -142,17 +142,17 @@ export function generatePersona(
   ) {
     return {
       archetype:
-        "anxious-overthinker",
+        "情緒內耗機",
 
       tone: "poetic",
 
       energy: "medium",
 
       description:
-        "Your mind keeps running long after the moment ends.",
+        "很多事情明明已經過去了，你卻還在腦海裡反覆重播。",
 
       quote:
-        "You replay conversations like unfinished songs.",
+        "你不是放不下，只是大腦從來沒有真正停下來過。",
 
       gradient:
         "from-cyan-950 via-black to-black",
@@ -170,18 +170,18 @@ export function generatePersona(
     archetype:
       dominantEmotion ===
       "loneliness"
-        ? "quiet-soul"
-        : "soft-heart",
+        ? "安靜共感者"
+        : "柔軟人格",
 
     tone: "soft",
 
     energy: "medium",
 
     description:
-      "Sensitive, reflective, and emotionally open.",
+      "你比自己想像中更敏感，也比別人以為的更容易受傷。",
 
     quote:
-      "Even after everything, you still choose softness.",
+      "在這個越來越冷淡的世界，你還願意保持溫柔。",
 
     gradient:
       "from-rose-950 via-black to-black",

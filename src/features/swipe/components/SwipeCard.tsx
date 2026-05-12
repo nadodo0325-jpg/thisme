@@ -30,7 +30,7 @@ export default function SwipeCard({
   const rotate = useTransform(
     x,
     [-260, 260],
-    [-22, 22]
+    [-18, 18]
   );
 
   /*
@@ -56,17 +56,27 @@ export default function SwipeCard({
   const cardScale = useTransform(
     x,
     [-260, 0, 260],
-    [0.96, 1, 0.96]
+    [0.97, 1, 0.97]
   );
 
   /*
-    BACKGROUND PARALLAX
+    GLOW PARALLAX
   */
 
   const glowX = useTransform(
     x,
     [-260, 260],
-    [-40, 40]
+    [-55, 55]
+  );
+
+  /*
+    LIVE META
+  */
+
+  const metaOpacity = useTransform(
+    x,
+    [-120, 0, 120],
+    [0.35, 1, 0.35]
   );
 
   /*
@@ -76,34 +86,54 @@ export default function SwipeCard({
   const vibeStyles = {
     soft: {
       glow:
-        "from-rose-500/20 via-pink-500/10 to-transparent",
+        "from-rose-500/25 via-pink-500/10 to-transparent",
 
       border:
-        "border-rose-500/20",
+        "border-rose-400/20",
+
+      accent:
+        "text-rose-100",
+
+      orb: "bg-rose-400/20",
     },
 
     dark: {
       glow:
-        "from-zinc-500/20 via-white/5 to-transparent",
+        "from-zinc-400/20 via-white/[0.03] to-transparent",
 
       border:
-        "border-zinc-500/20",
+        "border-zinc-400/20",
+
+      accent:
+        "text-zinc-100",
+
+      orb: "bg-zinc-300/10",
     },
 
     dreamy: {
       glow:
-        "from-indigo-500/20 via-fuchsia-500/10 to-transparent",
+        "from-indigo-500/25 via-fuchsia-500/10 to-transparent",
 
       border:
-        "border-indigo-500/20",
+        "border-indigo-400/20",
+
+      accent:
+        "text-indigo-100",
+
+      orb: "bg-indigo-400/20",
     },
 
     chaotic: {
       glow:
-        "from-cyan-500/20 via-sky-500/10 to-transparent",
+        "from-cyan-500/25 via-sky-500/10 to-transparent",
 
       border:
-        "border-cyan-500/20",
+        "border-cyan-400/20",
+
+      accent:
+        "text-cyan-100",
+
+      orb: "bg-cyan-400/20",
     },
   };
 
@@ -223,31 +253,27 @@ export default function SwipeCard({
       }}
       className={`
         absolute
-        w-[340px]
-        h-[540px]
-        rounded-[40px]
-        bg-gradient-to-b
-        from-zinc-900
-        via-black
-        to-black
-        border
-        ${vibe.border}
-        shadow-2xl
-        overflow-hidden
         flex
+        h-[560px]
+        w-[340px]
         flex-col
-        items-center
-        justify-center
-        px-8
+        overflow-hidden
+        rounded-[42px]
+        border
+        bg-[rgba(10,10,10,0.78)]
+        px-7
+        py-8
         text-center
+        shadow-[0_20px_80px_rgba(0,0,0,0.65)]
+        backdrop-blur-3xl
         select-none
         touch-none
         cursor-grab
         will-change-transform
-        backdrop-blur-xl
+        ${vibe.border}
       `}
     >
-      {/* ATMOSPHERE */}
+      {/* BACKGROUND GLOW */}
 
       <div
         className={`
@@ -255,8 +281,53 @@ export default function SwipeCard({
           inset-0
           bg-gradient-to-b
           ${vibe.glow}
-          opacity-80
+          opacity-90
         `}
+      />
+
+      {/* TOP LIGHT */}
+
+      <div
+        className="
+          absolute
+          inset-x-0
+          top-0
+          h-[180px]
+          bg-gradient-to-b
+          from-white/[0.06]
+          to-transparent
+        "
+      />
+
+      {/* FLOATING ORB */}
+
+      <motion.div
+        style={{
+          x: glowX,
+        }}
+        className={`
+          absolute
+          left-1/2
+          top-[28%]
+          h-[280px]
+          w-[280px]
+          -translate-x-1/2
+          rounded-full
+          blur-3xl
+          ${vibe.orb}
+        `}
+      />
+
+      {/* GLASS EDGE */}
+
+      <div
+        className="
+          absolute
+          inset-0
+          rounded-[42px]
+          ring-1
+          ring-white/[0.04]
+        "
       />
 
       {/* NOISE */}
@@ -281,20 +352,19 @@ export default function SwipeCard({
         }}
         className="
           absolute
-          top-8
-          right-8
+          right-6
+          top-6
+          z-20
+          rounded-full
           border
-          border-emerald-400
-          text-emerald-300
+          border-emerald-400/30
           bg-emerald-500/10
-          backdrop-blur-md
           px-5
           py-2
-          rounded-full
-          text-xs
-          font-semibold
-          tracking-[0.25em]
-          z-20
+          text-[11px]
+          tracking-[0.28em]
+          text-emerald-200
+          backdrop-blur-xl
         "
       >
         很像我
@@ -309,88 +379,87 @@ export default function SwipeCard({
         }}
         className="
           absolute
-          top-8
-          left-8
+          left-6
+          top-6
+          z-20
+          rounded-full
           border
-          border-rose-400
-          text-rose-300
+          border-rose-400/30
           bg-rose-500/10
-          backdrop-blur-md
           px-5
           py-2
-          rounded-full
-          text-xs
-          font-semibold
-          tracking-[0.25em]
-          z-20
+          text-[11px]
+          tracking-[0.28em]
+          text-rose-200
+          backdrop-blur-xl
         "
       >
         不像我
       </motion.div>
 
-      {/* FLOATING GLOW */}
-
-      <motion.div
-        style={{
-          x: glowX,
-        }}
-        className="
-          absolute
-          w-[280px]
-          h-[280px]
-          rounded-full
-          bg-white/5
-          blur-3xl
-        "
-      />
-
-      {/* TOP LABEL */}
+      {/* TOP META */}
 
       <div
         className="
           absolute
-          top-8
           left-1/2
+          top-7
+          z-20
           -translate-x-1/2
           text-[10px]
-          tracking-[0.35em]
           uppercase
-          text-zinc-600
-          z-20
+          tracking-[0.35em]
+          text-white/20
         "
       >
-        Emotional Scan
+        emotional fragment
       </div>
 
       {/* CONTENT */}
 
-      <div className="relative z-10">
+      <div
+        className="
+          relative
+          z-10
+          flex
+          flex-1
+          flex-col
+          items-center
+          justify-center
+        "
+      >
         {/* EMOJI */}
 
         <motion.div
           animate={{
-            y: [0, -8, 0],
+            y: [0, -10, 0],
+            scale: [1, 1.04, 1],
           }}
           transition={{
             repeat: Infinity,
-            duration: 5,
+            duration: 5.5,
             ease: "easeInOut",
           }}
-          className="text-8xl mb-10"
+          className="
+            mb-10
+            text-[5.5rem]
+            drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]
+          "
         >
           {card.emoji}
         </motion.div>
 
-        {/* MAIN TEXT */}
+        {/* TITLE */}
 
         <h2
-          className="
-            text-[2rem]
-            leading-[1.2]
+          className={`
+            max-w-[290px]
+            text-[2.15rem]
             font-semibold
-            tracking-tight
-            text-white
-          "
+            leading-[1.14]
+            tracking-[-0.04em]
+            ${vibe.accent}
+          `}
         >
           {card.text}
         </h2>
@@ -400,30 +469,76 @@ export default function SwipeCard({
         {card.subtext && (
           <p
             className="
-              mt-8
-              text-zinc-500
-              text-sm
-              leading-relaxed
+              mt-7
               max-w-[260px]
-              mx-auto
+              text-[15px]
+              leading-relaxed
+              text-white/40
             "
           >
             {card.subtext}
           </p>
         )}
 
+        {/* MICRO COPY */}
+
+        <p
+          className="
+            mt-8
+            text-[13px]
+            leading-relaxed
+            text-white/22
+          "
+        >
+          有些情緒，
+          <br />
+          不需要解釋也會被理解。
+        </p>
+      </div>
+
+      {/* BOTTOM */}
+
+      <div className="relative z-10">
+        {/* LIVE META */}
+
+        <motion.div
+          style={{
+            opacity: metaOpacity,
+          }}
+          className="
+            mx-auto
+            mb-5
+            inline-flex
+            items-center
+            gap-2
+            rounded-full
+            border
+            border-white/10
+            bg-white/[0.04]
+            px-4
+            py-2
+            text-[10px]
+            tracking-[0.22em]
+            text-white/35
+            backdrop-blur-xl
+          "
+        >
+          <div className="h-2 w-2 rounded-full bg-white/50" />
+
+          78% people felt this too
+        </motion.div>
+
         {/* FOOTER */}
 
         <p
           className="
-            mt-12
+            text-center
             text-[11px]
-            tracking-[0.2em]
-            uppercase
-            text-zinc-700
+            tracking-[0.24em]
+            text-white/15
           "
         >
-          依照你的直覺滑動
+          跟著直覺滑動 →
         </p>
       </div>
     </motion.div>
