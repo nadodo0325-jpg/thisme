@@ -104,6 +104,21 @@ export default function ResultPage() {
         "
       />
 
+      {/* NOISE */}
+
+      <div
+        className="
+          absolute
+          inset-0
+          opacity-[0.03]
+          pointer-events-none
+        "
+        style={{
+          backgroundImage:
+            "url('https://grainy-gradients.vercel.app/noise.svg')",
+        }}
+      />
+
       {/* CONTENT */}
 
       <div
@@ -131,7 +146,7 @@ export default function ResultPage() {
               text-sm
             "
           >
-            Analyzing emotional patterns...
+            正在分析你的情緒模式...
           </motion.div>
         )}
 
@@ -165,10 +180,9 @@ export default function ResultPage() {
                 text-zinc-200
               "
             >
-              You keep people close...
+              你總是把人留在身邊...
               <br />
-              but never fully let them
-              stay.
+              卻從來不敢真正留下誰。
             </p>
           </motion.div>
         )}
@@ -203,15 +217,16 @@ export default function ResultPage() {
                 mb-6
               "
             >
-              Emotional archetype detected
+              Emotional Archetype Detected
             </p>
 
             <h1
               className={`
-                text-6xl
-                md:text-8xl
+                text-5xl
+                md:text-7xl
                 font-bold
                 tracking-tight
+                leading-none
                 ${persona.accent}
               `}
             >
@@ -270,7 +285,7 @@ export default function ResultPage() {
                   font-light
                 "
               >
-                “{persona.quote}”
+                「{persona.quote}」
               </p>
             </div>
 
@@ -278,7 +293,7 @@ export default function ResultPage() {
 
             <div className="mt-12">
               <p className="text-zinc-500 text-sm mb-4 tracking-wide">
-                Emotional Energy
+                情緒能量
               </p>
 
               <div className="flex justify-center gap-2">

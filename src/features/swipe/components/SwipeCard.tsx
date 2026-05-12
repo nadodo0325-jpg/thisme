@@ -60,6 +60,16 @@ export default function SwipeCard({
   );
 
   /*
+    BACKGROUND PARALLAX
+  */
+
+  const glowX = useTransform(
+    x,
+    [-260, 260],
+    [-40, 40]
+  );
+
+  /*
     VIBE STYLES
   */
 
@@ -194,6 +204,23 @@ export default function SwipeCard({
         scale: cardScale,
       }}
       onDragEnd={handleDragEnd}
+      initial={{
+        opacity: 0,
+        scale: 0.92,
+        y: 20,
+      }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        y: 0,
+      }}
+      exit={{
+        opacity: 0,
+        scale: 0.9,
+      }}
+      transition={{
+        duration: 0.35,
+      }}
       className={`
         absolute
         w-[340px]
@@ -232,6 +259,19 @@ export default function SwipeCard({
         `}
       />
 
+      {/* NOISE */}
+
+      <div
+        className="
+          absolute
+          inset-0
+          opacity-[0.03]
+          mix-blend-screen
+          pointer-events-none
+          bg-[url('https://grainy-gradients.vercel.app/noise.svg')]
+        "
+      />
+
       {/* RIGHT OVERLAY */}
 
       <motion.div
@@ -257,7 +297,7 @@ export default function SwipeCard({
           z-20
         "
       >
-        RESONATE
+        很像我
       </motion.div>
 
       {/* LEFT OVERLAY */}
@@ -285,14 +325,14 @@ export default function SwipeCard({
           z-20
         "
       >
-        REJECT
+        不像我
       </motion.div>
 
       {/* FLOATING GLOW */}
 
       <motion.div
         style={{
-          x,
+          x: glowX,
         }}
         className="
           absolute
@@ -304,7 +344,7 @@ export default function SwipeCard({
         "
       />
 
-      {/* AI LABEL */}
+      {/* TOP LABEL */}
 
       <div
         className="
@@ -383,7 +423,7 @@ export default function SwipeCard({
             text-zinc-700
           "
         >
-          swipe based on emotion
+          依照你的直覺滑動
         </p>
       </div>
     </motion.div>

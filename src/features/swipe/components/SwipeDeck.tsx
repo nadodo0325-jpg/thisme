@@ -41,6 +41,13 @@ export default function SwipeDeck() {
     useState("");
 
   /*
+    transition lock
+  */
+
+  const [isTransitioning, setIsTransitioning] =
+    useState(false);
+
+  /*
     hydration
   */
 
@@ -83,7 +90,18 @@ export default function SwipeDeck() {
   function handleSwipe(
     direction: "left" | "right"
   ) {
-    if (!currentCard) return;
+    /*
+      prevent double swipe bug
+    */
+
+    if (
+      !currentCard ||
+      isTransitioning
+    ) {
+      return;
+    }
+
+    setIsTransitioning(true);
 
     /*
       emotion accumulation
@@ -133,7 +151,9 @@ export default function SwipeDeck() {
       setAiMessage("");
 
       setIndex(nextIndex);
-    }, 1000);
+
+      setIsTransitioning(false);
+    }, 950);
   }
 
   /*
@@ -145,7 +165,7 @@ export default function SwipeDeck() {
   }
 
   /*
-    complete
+    completed
   */
 
   if (!currentCard) {
@@ -163,7 +183,7 @@ export default function SwipeDeck() {
       <div className="w-[340px] mb-8">
         <div className="flex justify-between text-xs text-zinc-500 mb-2 tracking-wide">
           <span>
-            Emotional Scan
+            情緒掃描中
           </span>
 
           <span>
@@ -203,46 +223,46 @@ export default function SwipeDeck() {
 
       {/* AI MESSAGE */}
 
-      <AnimatePresence mode="wait">
-        {aiMessage && (
-          <motion.div
-            key={aiMessage}
-            initial={{
-              opacity: 0,
-              y: 10,
-              filter:
-                "blur(6px)",
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              filter:
-                "blur(0px)",
-            }}
-            exit={{
-              opacity: 0,
-              y: -10,
-              filter:
-                "blur(6px)",
-            }}
-            transition={{
-              duration: 0.45,
-            }}
-            className="
-              mb-6
-              text-center
-              text-sm
-              text-zinc-400
-              tracking-wide
-              max-w-[280px]
-              min-h-[40px]
-              leading-relaxed
-            "
-          >
-            {aiMessage}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className="h-[64px] mb-2 flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          {aiMessage && (
+            <motion.div
+              key={aiMessage}
+              initial={{
+                opacity: 0,
+                y: 10,
+                filter:
+                  "blur(6px)",
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter:
+                  "blur(0px)",
+              }}
+              exit={{
+                opacity: 0,
+                y: -10,
+                filter:
+                  "blur(6px)",
+              }}
+              transition={{
+                duration: 0.45,
+              }}
+              className="
+                text-center
+                text-sm
+                text-zinc-400
+                tracking-wide
+                max-w-[280px]
+                leading-relaxed
+              "
+            >
+              {aiMessage}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* STACK */}
 
@@ -329,11 +349,11 @@ export default function SwipeDeck() {
         "
       >
         <span>
-          ← Reject
+          ← 不像我
         </span>
 
         <span>
-          Resonates →
+          很像我 →
         </span>
       </motion.div>
     </div>
