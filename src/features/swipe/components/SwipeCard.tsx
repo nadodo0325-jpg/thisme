@@ -4,6 +4,7 @@ import {
   motion,
   useMotionValue,
   useTransform,
+  animate,
 } from "framer-motion";
 
 import { EmotionCard } from "../types/swipe";
@@ -22,47 +23,134 @@ export default function SwipeCard({
 }: Props) {
   const x = useMotionValue(0);
 
+  /*
+    ROTATION
+  */
+
   const rotate = useTransform(
     x,
-    [-200, 200],
-    [-18, 18]
+    [-260, 260],
+    [-22, 22]
   );
+
+  /*
+    OVERLAYS
+  */
 
   const rightOpacity = useTransform(
     x,
-    [0, 120],
+    [20, 140],
     [0, 1]
   );
 
   const leftOpacity = useTransform(
     x,
-    [-120, 0],
+    [-140, -20],
     [1, 0]
   );
+
+  /*
+    SCALE FEEL
+  */
+
+  const cardScale = useTransform(
+    x,
+    [-260, 0, 260],
+    [0.96, 1, 0.96]
+  );
+
+  async function handleDragEnd(
+    _: any,
+    info: any
+  ) {
+    const offset =
+      info.offset.x;
+
+    const velocity =
+      info.velocity.x;
+
+    /*
+      NATURAL SWIPE DETECTION
+    */
+
+    const shouldSwipeRight =
+      offset > 110 ||
+      velocity > 650;
+
+    const shouldSwipeLeft =
+      offset < -110 ||
+      velocity < -650;
+
+    /*
+      FLY RIGHT
+    */
+
+    if (shouldSwipeRight) {
+      await animate(
+        x,
+        900,
+        {
+          type: "spring",
+          stiffness: 220,
+          damping: 24,
+        }
+      );
+
+      onSwipe("right");
+
+      return;
+    }
+
+    /*
+      FLY LEFT
+    */
+
+    if (shouldSwipeLeft) {
+      await animate(
+        x,
+        -900,
+        {
+          type: "spring",
+          stiffness: 220,
+          damping: 24,
+        }
+      );
+
+      onSwipe("left");
+
+      return;
+    }
+
+    /*
+      SNAP BACK
+    */
+
+    animate(x, 0, {
+      type: "spring",
+      stiffness: 420,
+      damping: 30,
+    });
+  }
 
   return (
     <motion.div
       drag="x"
+      dragElastic={0.18}
+      dragMomentum={true}
       dragConstraints={{
         left: 0,
         right: 0,
       }}
+      whileTap={{
+        scale: 0.985,
+        cursor: "grabbing",
+      }}
       style={{
         x,
         rotate,
+        scale: cardScale,
       }}
-      whileTap={{
-        scale: 0.98,
-      }}
-      onDragEnd={(_, info) => {
-        if (info.offset.x > 120) {
-          onSwipe("right");
-        }
-
-        if (info.offset.x < -120) {
-          onSwipe("left");
-        }
-      }}
+      onDragEnd={handleDragEnd}
       className="
         absolute
         w-[340px]
@@ -70,6 +158,7 @@ export default function SwipeCard({
         rounded-[36px]
         bg-gradient-to-b
         from-zinc-900
+        via-zinc-950
         to-black
         border
         border-zinc-800
@@ -82,8 +171,10 @@ export default function SwipeCard({
         px-8
         text-center
         select-none
+        touch-none
         cursor-grab
-        active:cursor-grabbing
+        will-change-transform
+        backdrop-blur-xl
       "
     >
       {/* RIGHT OVERLAY */}
@@ -91,20 +182,23 @@ export default function SwipeCard({
       <motion.div
         style={{
           opacity: rightOpacity,
+          scale: rightOpacity,
         }}
         className="
           absolute
           top-8
           right-8
           border
-          border-green-400
-          text-green-400
-          px-4
+          border-emerald-400
+          text-emerald-300
+          bg-emerald-500/10
+          backdrop-blur-md
+          px-5
           py-2
           rounded-full
-          text-sm
+          text-xs
           font-semibold
-          tracking-widest
+          tracking-[0.25em]
         "
       >
         RESONATE
@@ -115,32 +209,38 @@ export default function SwipeCard({
       <motion.div
         style={{
           opacity: leftOpacity,
+          scale: leftOpacity,
         }}
         className="
           absolute
           top-8
           left-8
           border
-          border-red-400
-          text-red-400
-          px-4
+          border-rose-400
+          text-rose-300
+          bg-rose-500/10
+          backdrop-blur-md
+          px-5
           py-2
           rounded-full
-          text-sm
+          text-xs
           font-semibold
-          tracking-widest
+          tracking-[0.25em]
         "
       >
         REJECT
       </motion.div>
 
-      {/* BACKGROUND GLOW */}
+      {/* GLOW */}
 
-      <div
+      <motion.div
+        style={{
+          x,
+        }}
         className="
           absolute
-          w-[220px]
-          h-[220px]
+          w-[260px]
+          h-[260px]
           rounded-full
           bg-white/5
           blur-3xl
@@ -150,16 +250,40 @@ export default function SwipeCard({
       {/* CONTENT */}
 
       <div className="relative z-10">
-        <div className="text-8xl mb-10">
+        <motion.div
+          animate={{
+            y: [0, -6, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 4,
+            ease: "easeInOut",
+          }}
+          className="text-8xl mb-10"
+        >
           {card.emoji}
-        </div>
+        </motion.div>
 
-        <h2 className="text-4xl font-semibold leading-snug">
+        <h2
+          className="
+            text-4xl
+            font-semibold
+            leading-snug
+            tracking-tight
+          "
+        >
           {card.text}
         </h2>
 
-        <p className="mt-10 text-zinc-500 text-sm tracking-wide">
-          Swipe if this feels like you
+        <p
+          className="
+            mt-10
+            text-zinc-500
+            text-sm
+            tracking-wide
+          "
+        >
+          Swipe if this resonates with you
         </p>
       </div>
     </motion.div>

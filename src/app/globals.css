@@ -13,12 +13,25 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* RESET */
+
 * {
   box-sizing: border-box;
+
+  -webkit-tap-highlight-color:
+    transparent;
 }
 
 html {
   scroll-behavior: smooth;
+
+  /*
+    smoother gestures
+  */
+
+  overscroll-behavior: none;
+
+  touch-action: manipulation;
 }
 
 body {
@@ -40,15 +53,47 @@ body {
   min-height: 100vh;
 
   margin: 0;
+
+  /*
+    mobile swipe polish
+  */
+
+  overscroll-behavior: none;
+
+  -webkit-font-smoothing:
+    antialiased;
+
+  -moz-osx-font-smoothing:
+    grayscale;
+
+  text-rendering:
+    optimizeLegibility;
 }
 
-/* 選取文字顏色 */
+/*
+  smoother animations
+*/
+
+button,
+a,
+div {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/*
+  selection
+*/
+
 ::selection {
   background: #a855f7;
   color: white;
 }
 
-/* Scrollbar */
+/*
+  scrollbar
+*/
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -64,4 +109,23 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #9333ea;
+}
+
+/*
+  prevent image dragging
+*/
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/*
+  smoother motion
+*/
+
+.motion-safe {
+  will-change:
+    transform,
+    opacity;
 }

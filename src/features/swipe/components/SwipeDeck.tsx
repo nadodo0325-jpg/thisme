@@ -8,7 +8,10 @@ import {
 
 import { useRouter } from "next/navigation";
 
-import { motion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+} from "framer-motion";
 
 import { emotionCards } from "../data/emotions";
 
@@ -21,23 +24,25 @@ export default function SwipeDeck() {
 
   const {
     addEmotion,
-    vector,
     emotions,
   } = useFluxStore();
 
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] =
+    useState(0);
 
   const [hydrated, setHydrated] =
     useState(false);
+
+  /*
+    hydration
+  */
 
   useEffect(() => {
     setHydrated(true);
   }, []);
 
   /*
-    IMPORTANT
-
-    restore swipe progress
+    restore progress
   */
 
   useEffect(() => {
@@ -52,6 +57,10 @@ export default function SwipeDeck() {
   const nextCard =
     emotionCards[index + 1];
 
+  /*
+    progress
+  */
+
   const progress = useMemo(() => {
     return (
       ((index + 1) /
@@ -60,10 +69,18 @@ export default function SwipeDeck() {
     );
   }, [index]);
 
+  /*
+    swipe
+  */
+
   function handleSwipe(
     direction: "left" | "right"
   ) {
     if (!currentCard) return;
+
+    /*
+      right swipe only
+    */
 
     if (direction === "right") {
       addEmotion(
@@ -75,18 +92,24 @@ export default function SwipeDeck() {
     const nextIndex = index + 1;
 
     /*
-      FINISHED
+      finished
     */
 
     if (nextIndex >= emotionCards.length) {
       setTimeout(() => {
         router.push("/flux/result");
-      }, 250);
+      }, 450);
 
       return;
     }
 
-    setIndex(nextIndex);
+    /*
+      smoother pacing
+    */
+
+    setTimeout(() => {
+      setIndex(nextIndex);
+    }, 120);
   }
 
   /*
@@ -98,13 +121,13 @@ export default function SwipeDeck() {
   }
 
   /*
-    all cards completed
+    complete
   */
 
   if (!currentCard) {
     return (
       <div className="text-zinc-500">
-        Redirecting...
+        Entering result...
       </div>
     );
   }
@@ -113,8 +136,8 @@ export default function SwipeDeck() {
     <div className="flex flex-col items-center">
       {/* PROGRESS */}
 
-      <div className="w-[340px] mb-6">
-        <div className="flex justify-between text-xs text-zinc-500 mb-2">
+      <div className="w-[340px] mb-8">
+        <div className="flex justify-between text-xs text-zinc-500 mb-2 tracking-wide">
           <span>
             Emotional Scan
           </span>
@@ -128,51 +151,116 @@ export default function SwipeDeck() {
           </span>
         </div>
 
-        <div className="h-[6px] bg-zinc-900 rounded-full overflow-hidden">
+        <div
+          className="
+            h-[6px]
+            bg-zinc-900
+            rounded-full
+            overflow-hidden
+            border
+            border-zinc-800
+          "
+        >
           <motion.div
             animate={{
               width: `${progress}%`,
             }}
             transition={{
-              duration: 0.25,
+              duration: 0.35,
+              ease: "easeOut",
             }}
-            className="h-full bg-white"
+            className="
+              h-full
+              bg-white
+            "
           />
         </div>
       </div>
 
-      {/* CARD STACK */}
+      {/* STACK */}
 
       <div className="relative w-[340px] h-[520px]">
-        {/* NEXT CARD */}
+        {/* DEPTH CARD 2 */}
 
         {nextCard && (
-          <div
+          <motion.div
+            animate={{
+              scale: 0.94,
+              y: 18,
+              opacity: 0.35,
+            }}
+            transition={{
+              duration: 0.35,
+            }}
             className="
               absolute
               inset-0
-              scale-[0.96]
-              translate-y-3
               rounded-[36px]
-              bg-zinc-900/60
+              bg-zinc-950
+              border
+              border-zinc-900
+              blur-[0.3px]
+            "
+          />
+        )}
+
+        {/* DEPTH CARD 1 */}
+
+        {nextCard && (
+          <motion.div
+            animate={{
+              scale: 0.97,
+              y: 8,
+              opacity: 0.6,
+            }}
+            transition={{
+              duration: 0.25,
+            }}
+            className="
+              absolute
+              inset-0
+              rounded-[36px]
+              bg-zinc-900
               border
               border-zinc-800
             "
           />
         )}
 
-        {/* CURRENT CARD */}
+        {/* ACTIVE CARD */}
 
-        <SwipeCard
-          key={currentCard.id}
-          card={currentCard}
-          onSwipe={handleSwipe}
-        />
+        <AnimatePresence mode="wait">
+          <SwipeCard
+            key={currentCard.id}
+            card={currentCard}
+            onSwipe={handleSwipe}
+          />
+        </AnimatePresence>
       </div>
 
       {/* HINTS */}
 
-      <div className="mt-8 flex gap-8 text-sm text-zinc-600">
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 10,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          delay: 0.25,
+        }}
+        className="
+          mt-8
+          flex
+          gap-10
+          text-sm
+          text-zinc-600
+          tracking-wide
+        "
+      >
         <span>
           ← Reject
         </span>
@@ -180,7 +268,7 @@ export default function SwipeDeck() {
         <span>
           Resonates →
         </span>
-      </div>
+      </motion.div>
     </div>
   );
 }
