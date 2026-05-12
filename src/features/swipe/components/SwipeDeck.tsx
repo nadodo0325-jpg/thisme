@@ -34,6 +34,13 @@ export default function SwipeDeck() {
     useState(false);
 
   /*
+    AI reaction
+  */
+
+  const [aiMessage, setAiMessage] =
+    useState("");
+
+  /*
     hydration
   */
 
@@ -79,7 +86,7 @@ export default function SwipeDeck() {
     if (!currentCard) return;
 
     /*
-      right swipe only
+      emotion accumulation
     */
 
     if (direction === "right") {
@@ -89,27 +96,44 @@ export default function SwipeDeck() {
       );
     }
 
+    /*
+      AI reply
+    */
+
+    const reply =
+      direction === "right"
+        ? currentCard.aiReply
+            ?.resonate
+        : currentCard.aiReply
+            ?.reject;
+
+    if (reply) {
+      setAiMessage(reply);
+    }
+
     const nextIndex = index + 1;
 
     /*
-      finished
+      final transition
     */
 
     if (nextIndex >= emotionCards.length) {
       setTimeout(() => {
         router.push("/flux/result");
-      }, 450);
+      }, 1400);
 
       return;
     }
 
     /*
-      smoother pacing
+      cinematic pacing
     */
 
     setTimeout(() => {
+      setAiMessage("");
+
       setIndex(nextIndex);
-    }, 120);
+    }, 1000);
   }
 
   /*
@@ -177,9 +201,52 @@ export default function SwipeDeck() {
         </div>
       </div>
 
+      {/* AI MESSAGE */}
+
+      <AnimatePresence mode="wait">
+        {aiMessage && (
+          <motion.div
+            key={aiMessage}
+            initial={{
+              opacity: 0,
+              y: 10,
+              filter:
+                "blur(6px)",
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              filter:
+                "blur(0px)",
+            }}
+            exit={{
+              opacity: 0,
+              y: -10,
+              filter:
+                "blur(6px)",
+            }}
+            transition={{
+              duration: 0.45,
+            }}
+            className="
+              mb-6
+              text-center
+              text-sm
+              text-zinc-400
+              tracking-wide
+              max-w-[280px]
+              min-h-[40px]
+              leading-relaxed
+            "
+          >
+            {aiMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* STACK */}
 
-      <div className="relative w-[340px] h-[520px]">
+      <div className="relative w-[340px] h-[540px]">
         {/* DEPTH CARD 2 */}
 
         {nextCard && (
@@ -195,7 +262,7 @@ export default function SwipeDeck() {
             className="
               absolute
               inset-0
-              rounded-[36px]
+              rounded-[40px]
               bg-zinc-950
               border
               border-zinc-900
@@ -219,7 +286,7 @@ export default function SwipeDeck() {
             className="
               absolute
               inset-0
-              rounded-[36px]
+              rounded-[40px]
               bg-zinc-900
               border
               border-zinc-800

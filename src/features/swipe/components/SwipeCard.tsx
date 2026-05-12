@@ -59,6 +59,49 @@ export default function SwipeCard({
     [0.96, 1, 0.96]
   );
 
+  /*
+    VIBE STYLES
+  */
+
+  const vibeStyles = {
+    soft: {
+      glow:
+        "from-rose-500/20 via-pink-500/10 to-transparent",
+
+      border:
+        "border-rose-500/20",
+    },
+
+    dark: {
+      glow:
+        "from-zinc-500/20 via-white/5 to-transparent",
+
+      border:
+        "border-zinc-500/20",
+    },
+
+    dreamy: {
+      glow:
+        "from-indigo-500/20 via-fuchsia-500/10 to-transparent",
+
+      border:
+        "border-indigo-500/20",
+    },
+
+    chaotic: {
+      glow:
+        "from-cyan-500/20 via-sky-500/10 to-transparent",
+
+      border:
+        "border-cyan-500/20",
+    },
+  };
+
+  const vibe =
+    vibeStyles[
+      card.vibe || "soft"
+    ];
+
   async function handleDragEnd(
     _: any,
     info: any
@@ -151,17 +194,17 @@ export default function SwipeCard({
         scale: cardScale,
       }}
       onDragEnd={handleDragEnd}
-      className="
+      className={`
         absolute
         w-[340px]
-        h-[520px]
-        rounded-[36px]
+        h-[540px]
+        rounded-[40px]
         bg-gradient-to-b
         from-zinc-900
-        via-zinc-950
+        via-black
         to-black
         border
-        border-zinc-800
+        ${vibe.border}
         shadow-2xl
         overflow-hidden
         flex
@@ -175,8 +218,20 @@ export default function SwipeCard({
         cursor-grab
         will-change-transform
         backdrop-blur-xl
-      "
+      `}
     >
+      {/* ATMOSPHERE */}
+
+      <div
+        className={`
+          absolute
+          inset-0
+          bg-gradient-to-b
+          ${vibe.glow}
+          opacity-80
+        `}
+      />
+
       {/* RIGHT OVERLAY */}
 
       <motion.div
@@ -199,6 +254,7 @@ export default function SwipeCard({
           text-xs
           font-semibold
           tracking-[0.25em]
+          z-20
         "
       >
         RESONATE
@@ -226,12 +282,13 @@ export default function SwipeCard({
           text-xs
           font-semibold
           tracking-[0.25em]
+          z-20
         "
       >
         REJECT
       </motion.div>
 
-      {/* GLOW */}
+      {/* FLOATING GLOW */}
 
       <motion.div
         style={{
@@ -239,24 +296,44 @@ export default function SwipeCard({
         }}
         className="
           absolute
-          w-[260px]
-          h-[260px]
+          w-[280px]
+          h-[280px]
           rounded-full
           bg-white/5
           blur-3xl
         "
       />
 
+      {/* AI LABEL */}
+
+      <div
+        className="
+          absolute
+          top-8
+          left-1/2
+          -translate-x-1/2
+          text-[10px]
+          tracking-[0.35em]
+          uppercase
+          text-zinc-600
+          z-20
+        "
+      >
+        Emotional Scan
+      </div>
+
       {/* CONTENT */}
 
       <div className="relative z-10">
+        {/* EMOJI */}
+
         <motion.div
           animate={{
-            y: [0, -6, 0],
+            y: [0, -8, 0],
           }}
           transition={{
             repeat: Infinity,
-            duration: 4,
+            duration: 5,
             ease: "easeInOut",
           }}
           className="text-8xl mb-10"
@@ -264,26 +341,49 @@ export default function SwipeCard({
           {card.emoji}
         </motion.div>
 
+        {/* MAIN TEXT */}
+
         <h2
           className="
-            text-4xl
+            text-[2rem]
+            leading-[1.2]
             font-semibold
-            leading-snug
             tracking-tight
+            text-white
           "
         >
           {card.text}
         </h2>
 
+        {/* SUBTEXT */}
+
+        {card.subtext && (
+          <p
+            className="
+              mt-8
+              text-zinc-500
+              text-sm
+              leading-relaxed
+              max-w-[260px]
+              mx-auto
+            "
+          >
+            {card.subtext}
+          </p>
+        )}
+
+        {/* FOOTER */}
+
         <p
           className="
-            mt-10
-            text-zinc-500
-            text-sm
-            tracking-wide
+            mt-12
+            text-[11px]
+            tracking-[0.2em]
+            uppercase
+            text-zinc-700
           "
         >
-          Swipe if this resonates with you
+          swipe based on emotion
         </p>
       </div>
     </motion.div>
