@@ -13,4 +13,8 @@ export type ArchetypeType =
   | "midnight-thinker"
   | "detached-ghost"
   | "soft-heart"
-  | "chaotic-dreamer";
+  | "chaotic-dreamer"
+  | "validation-chaser"
+  | "hope-romantic"
+  | "anxious-overthinker"
+  | "quiet-soul";
