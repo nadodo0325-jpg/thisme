@@ -4,6 +4,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  useCallback,
 } from "react";
 
 import { useRouter } from "next/navigation";
@@ -18,6 +19,15 @@ import { emotionCards } from "../data/emotions";
 import SwipeCard from "./SwipeCard";
 
 import { useFluxStore } from "@/stores/fluxStore";
+
+import {
+  GestureState,
+  getAuraColor,
+  getGestureLabel,
+  getUniverseSignalGradient,
+} from "../lib/emotionUniverse";
+
+import { useEmotionRuntime } from "../runtime/useEmotionRuntime";
 
 const liveStats = [
   "今晚最多人卡住的情緒是『已讀不回』",
@@ -38,19 +48,15 @@ const dynamicMessages = [
   "有些選擇，比你以為的更真實",
 ];
 
-type GestureState =
-  | "idle"
-  | "resonate"
-  | "reject"
-  | "intense"
-  | "suppress";
-
 export default function SwipeDeck() {
   const router = useRouter();
+
+  useEmotionRuntime();
 
   const {
     addEmotion,
     emotions,
+    triggerUniversePulse,
   } = useFluxStore();
 
   const [index, setIndex] =
@@ -77,6 +83,29 @@ export default function SwipeDeck() {
 
   const [gestureState, setGestureState] =
     useState<GestureState>("idle");
+
+  /*
+    swipe impulse
+  */
+
+  const [swipeImpulse, setSwipeImpulse] =
+    useState(0);
+
+  /*
+    gesture energy
+  */
+
+  const [gestureEnergy, setGestureEnergy] =
+    useState(0);
+
+  /*
+    universe signal trigger
+  */
+
+  const [
+    universeSignal,
+    setUniverseSignal,
+  ] = useState(false);
 
   /*
     hydration
@@ -126,6 +155,22 @@ export default function SwipeDeck() {
       clearInterval(interval);
   }, []);
 
+  /*
+    reset universe signal
+  */
+
+  useEffect(() => {
+    if (!universeSignal) return;
+
+    const timeout =
+      setTimeout(() => {
+        setUniverseSignal(false);
+      }, 900);
+
+    return () =>
+      clearTimeout(timeout);
+  }, [universeSignal]);
+
   const currentCard =
     emotionCards[index];
 
@@ -145,178 +190,249 @@ export default function SwipeDeck() {
   }, [index]);
 
   /*
-    swipe
+    AI emotional rendering pipeline
   */
 
-  function handleSwipe(
-    direction:
-      | "left"
-      | "right"
-      | "up"
-      | "down"
-  ) {
-    if (
-      !currentCard ||
-      isTransitioning
-    ) {
-      return;
-    }
-
-    setIsTransitioning(true);
-
-    /*
-      emotional reactions
-    */
-
-    if (direction === "right") {
-      setGestureState(
-        "resonate"
+  const gestureLabel =
+    useMemo(() => {
+      return getGestureLabel(
+        gestureState
       );
+    }, [gestureState]);
 
-      /*
-        resonance
-      */
+  const universeGradient =
+    useMemo(() => {
+      return getUniverseSignalGradient(
+        gestureState
+      );
+    }, [gestureState]);
 
-      addEmotion(
-        currentCard.id,
-        {
-          ...currentCard.weights,
-          resonance: 1,
+  const auraColor =
+    useMemo(() => {
+      return getAuraColor(
+        gestureState
+      );
+    }, [gestureState]);
+
+  /*
+    swipe action resolver
+  */
+
+  const handleSwipe =
+    useCallback(
+      (
+        direction:
+          | "left"
+          | "right"
+          | "up"
+          | "down"
+      ) => {
+        if (
+          !currentCard ||
+          isTransitioning
+        ) {
+          return;
         }
-      );
-    }
 
-    if (direction === "left") {
-      setGestureState("reject");
+        setIsTransitioning(true);
 
-      /*
-        rejection
-      */
+        /*
+          impulse + energy
+        */
 
-      addEmotion(
-        currentCard.id,
-        {
-          rejection: 1,
-        }
-      );
-    }
+        const impulse =
+          Math.random() * 0.6 +
+          0.7;
 
-    if (direction === "up") {
-      setGestureState("intense");
+        const energy =
+          Math.random() * 100;
 
-      /*
-        amplification
-      */
-
-      addEmotion(
-        currentCard.id,
-        {
-          ...currentCard.weights,
-          obsession: 1.4,
-          emotionalIntensity: 1,
-        }
-      );
-    }
-
-    if (direction === "down") {
-      setGestureState("suppress");
-
-      /*
-        suppression
-      */
-
-      addEmotion(
-        currentCard.id,
-        {
-          suppression: 1.2,
-          avoidance: 1,
-        }
-      );
-    }
-
-    /*
-      ai response
-    */
-
-    let reply = "";
-
-    if (direction === "right") {
-      reply =
-        currentCard.aiReply
-          ?.resonate ||
-        "你對這個情緒產生了共鳴。";
-    }
-
-    if (direction === "left") {
-      reply =
-        currentCard.aiReply
-          ?.reject ||
-        "你正在抗拒這個情緒。";
-    }
-
-    if (direction === "up") {
-      reply =
-        "你放大了這個情緒。";
-    }
-
-    if (direction === "down") {
-      reply =
-        "你選擇把情緒壓了下去。";
-    }
-
-    if (reply) {
-      setAiMessage(reply);
-    }
-
-    /*
-      live emotional update
-    */
-
-    const randomDynamic =
-      dynamicMessages[
-        Math.floor(
-          Math.random() *
-            dynamicMessages.length
-        )
-      ];
-
-    setLiveMessage(
-      randomDynamic
-    );
-
-    const nextIndex = index + 1;
-
-    /*
-      result
-    */
-
-    if (
-      nextIndex >=
-      emotionCards.length
-    ) {
-      setTimeout(() => {
-        router.push(
-          "/flux/result"
+        setSwipeImpulse(
+          impulse
         );
-      }, 1700);
 
-      return;
-    }
+        setGestureEnergy(
+          energy
+        );
 
-    /*
-      pacing
-    */
+        /*
+          universe pulse
+        */
 
-    setTimeout(() => {
-      setAiMessage("");
+        setUniverseSignal(true);
 
-      setGestureState("idle");
+        /*
+          global universe pulse
+        */
 
-      setIndex(nextIndex);
+        triggerUniversePulse(
+          impulse
+        );
 
-      setIsTransitioning(false);
-    }, 900);
-  }
+        /*
+          emotional reactions
+        */
+
+        let nextGesture: GestureState =
+          "idle";
+
+        let reply = "";
+
+        if (
+          direction === "right"
+        ) {
+          nextGesture =
+            "resonate";
+
+          addEmotion(
+            currentCard.id,
+            {
+              ...currentCard.weights,
+              resonance: 1,
+            }
+          );
+
+          reply =
+            currentCard.aiReply
+              ?.resonate ||
+            "你對這個情緒產生了共鳴。";
+        }
+
+        if (
+          direction === "left"
+        ) {
+          nextGesture =
+            "reject";
+
+          addEmotion(
+            currentCard.id,
+            {
+              rejection: 1,
+            }
+          );
+
+          reply =
+            currentCard.aiReply
+              ?.reject ||
+            "你正在抗拒這個情緒。";
+        }
+
+        if (
+          direction === "up"
+        ) {
+          nextGesture =
+            "intense";
+
+          addEmotion(
+            currentCard.id,
+            {
+              ...currentCard.weights,
+              obsession: 1.4,
+              emotionalIntensity: 1,
+            }
+          );
+
+          reply =
+            "你放大了這個情緒。";
+        }
+
+        if (
+          direction === "down"
+        ) {
+          nextGesture =
+            "suppress";
+
+          addEmotion(
+            currentCard.id,
+            {
+              suppression: 1.2,
+              avoidance: 1,
+            }
+          );
+
+          reply =
+            "你選擇把情緒壓了下去。";
+        }
+
+        setGestureState(
+          nextGesture
+        );
+
+        /*
+          ai response
+        */
+
+        if (reply) {
+          setAiMessage(reply);
+        }
+
+        /*
+          live emotional update
+        */
+
+        const randomDynamic =
+          dynamicMessages[
+            Math.floor(
+              Math.random() *
+                dynamicMessages.length
+            )
+          ];
+
+        setLiveMessage(
+          randomDynamic
+        );
+
+        const nextIndex =
+          index + 1;
+
+        /*
+          result
+        */
+
+        if (
+          nextIndex >=
+          emotionCards.length
+        ) {
+          setTimeout(() => {
+            router.push(
+              "/flux/result"
+            );
+          }, 1700);
+
+          return;
+        }
+
+        /*
+          pacing
+        */
+
+        setTimeout(() => {
+          setAiMessage("");
+
+          setGestureState(
+            "idle"
+          );
+
+          setIndex(nextIndex);
+
+          setIsTransitioning(
+            false
+          );
+
+          setSwipeImpulse(0);
+
+          setGestureEnergy(0);
+        }, 900);
+      },
+      [
+        currentCard,
+        isTransitioning,
+        triggerUniversePulse,
+        addEmotion,
+        index,
+        router,
+      ]
+    );
 
   /*
     hydration guard
@@ -338,39 +454,70 @@ export default function SwipeDeck() {
     );
   }
 
-  /*
-    gesture visuals
-  */
-
-  const gestureLabel =
-    gestureState ===
-    "resonate"
-      ? "resonating..."
-      : gestureState ===
-        "reject"
-      ? "rejecting..."
-      : gestureState ===
-        "intense"
-      ? "too intense..."
-      : gestureState ===
-        "suppress"
-      ? "emotion suppressed..."
-      : "";
-
   return (
     <div className="flex w-full flex-col items-center">
+      {/* UNIVERSE SIGNAL */}
+
+      <AnimatePresence>
+        {universeSignal && (
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 0.6,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1.8,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 2.4,
+            }}
+            transition={{
+              duration: 0.9,
+            }}
+            className="
+              pointer-events-none
+              absolute
+              left-1/2
+              top-1/2
+              z-0
+              h-[720px]
+              w-[720px]
+              -translate-x-1/2
+              -translate-y-1/2
+              rounded-full
+              border
+              border-white/10
+              blur-3xl
+            "
+            style={{
+              background:
+                universeGradient,
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       {/* EMOTIONAL AURA */}
 
       <AnimatePresence>
-        {gestureState !== "idle" && (
+        {gestureState !==
+          "idle" && (
           <motion.div
             initial={{
               opacity: 0,
               scale: 0.8,
             }}
             animate={{
-              opacity: 1,
-              scale: 1,
+              opacity:
+                0.75 +
+                swipeImpulse *
+                  0.25,
+              scale:
+                1 +
+                swipeImpulse *
+                  0.12,
             }}
             exit={{
               opacity: 0,
@@ -394,16 +541,7 @@ export default function SwipeDeck() {
             "
             style={{
               background:
-                gestureState ===
-                "resonate"
-                  ? "rgba(255,255,255,0.14)"
-                  : gestureState ===
-                    "intense"
-                  ? "rgba(168,85,247,0.16)"
-                  : gestureState ===
-                    "suppress"
-                  ? "rgba(34,211,238,0.12)"
-                  : "rgba(120,120,255,0.12)",
+                auraColor,
             }}
           />
         )}
@@ -488,6 +626,56 @@ export default function SwipeDeck() {
           </motion.p>
         </AnimatePresence>
       </motion.div>
+
+      {/* GESTURE ENERGY */}
+
+      <AnimatePresence mode="wait">
+        {gestureState !==
+          "idle" && (
+          <motion.div
+            key={gestureState}
+            initial={{
+              opacity: 0,
+              y: -8,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              y: -8,
+            }}
+            className="
+              relative
+              z-10
+              mb-4
+              rounded-full
+              border
+              border-white/10
+              bg-white/[0.03]
+              px-4
+              py-2
+              backdrop-blur-xl
+            "
+          >
+            <p
+              className="
+                text-[10px]
+                uppercase
+                tracking-[0.24em]
+                text-white/35
+              "
+            >
+              gesture energy ·{" "}
+              {gestureEnergy.toFixed(
+                0
+              )}
+              %
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* PROGRESS */}
 
@@ -742,7 +930,9 @@ export default function SwipeDeck() {
           <SwipeCard
             key={currentCard.id}
             card={currentCard}
-            onSwipe={handleSwipe}
+            onSwipe={
+              handleSwipe
+            }
           />
         </AnimatePresence>
       </div>

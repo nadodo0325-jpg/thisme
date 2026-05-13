@@ -7,6 +7,14 @@ import SwipeDeck from "@/features/swipe/components/SwipeDeck";
 import { useFluxStore } from "@/stores/fluxStore";
 
 import {
+  calculateAtmosphere,
+  calculateAuraOpacity,
+  calculateOverlayOpacity,
+  calculatePulseStrength,
+  calculateShockwavePower,
+} from "@/features/swipe/lib/emotionUniverse";
+
+import {
   motion,
   useMotionValue,
   useTransform,
@@ -14,8 +22,10 @@ import {
 } from "framer-motion";
 
 export default function FluxPage() {
-  const { vector } =
-    useFluxStore();
+  const {
+    vector,
+    universe,
+  } = useFluxStore();
 
   /*
     EMOTIONAL ATMOSPHERE
@@ -25,28 +35,34 @@ export default function FluxPage() {
     useMotionValue(0);
 
   /*
+    LIVE REACTIVE SIGNALS
+  */
+
+  const flashLayer =
+    useMotionValue(0);
+
+  const pulseBurst =
+    useMotionValue(1);
+
+  const shockwaveBurst =
+    useMotionValue(0);
+
+  const particlesBoost =
+    useMotionValue(0);
+
+  /*
     dynamic atmosphere
   */
 
   useEffect(() => {
     const totalEmotion =
-      vector.loneliness +
-      vector.anxiety +
-      vector.validation +
-      vector.intimacy +
-      vector.avoidance +
-      vector.resonance +
-      vector.rejection +
-      vector.obsession +
-      vector.emotionalIntensity +
-      vector.suppression;
+      calculateAtmosphere(
+        vector
+      );
 
     animate(
       atmosphere,
-      Math.min(
-        totalEmotion,
-        18
-      ),
+      totalEmotion,
       {
         duration: 1.2,
       }
@@ -57,35 +73,125 @@ export default function FluxPage() {
   ]);
 
   /*
+    REACTIVE UNIVERSE EVENTS
+  */
+
+  useEffect(() => {
+    if (
+      !universe.swipeImpulse &&
+      !universe.universePulse &&
+      !universe.shockwave
+    ) {
+      return;
+    }
+
+    /*
+      fullscreen flash
+    */
+
+    flashLayer.set(0.55);
+
+    animate(
+      flashLayer,
+      0,
+      {
+        duration: 0.9,
+        ease: "easeOut",
+      }
+    );
+
+    /*
+      universe pulse burst
+    */
+
+    pulseBurst.set(1.24);
+
+    animate(
+      pulseBurst,
+      1,
+      {
+        duration: 1.4,
+        ease: "easeOut",
+      }
+    );
+
+    /*
+      shockwave explode
+    */
+
+    shockwaveBurst.set(1);
+
+    animate(
+      shockwaveBurst,
+      0,
+      {
+        duration: 1.8,
+        ease: "easeOut",
+      }
+    );
+
+    /*
+      particles response
+    */
+
+    particlesBoost.set(1);
+
+    animate(
+      particlesBoost,
+      0,
+      {
+        duration: 2.2,
+        ease: "easeOut",
+      }
+    );
+  }, [
+    universe.swipeImpulse,
+    universe.universePulse,
+    universe.shockwave,
+    flashLayer,
+    pulseBurst,
+    shockwaveBurst,
+    particlesBoost,
+  ]);
+
+  /*
     background reactions
   */
 
   const topAuraOpacity =
     useTransform(
       atmosphere,
-      [0, 18],
-      [0.12, 0.28]
+      (value) =>
+        calculateAuraOpacity(
+          value
+        ).top
     );
 
   const bottomAuraOpacity =
     useTransform(
       atmosphere,
-      [0, 18],
-      [0.08, 0.22]
+      (value) =>
+        calculateAuraOpacity(
+          value
+        ).bottom
     );
 
   const sideAuraOpacity =
     useTransform(
       atmosphere,
-      [0, 18],
-      [0.08, 0.18]
+      (value) =>
+        calculateAuraOpacity(
+          value
+        ).side
     );
 
   const overlayOpacity =
     useTransform(
       atmosphere,
-      [0, 18],
-      [0.3, 0.5]
+      (value) =>
+        calculateOverlayOpacity(
+          value
+        )
     );
 
   /*
@@ -95,8 +201,77 @@ export default function FluxPage() {
   const pulseScale =
     useTransform(
       atmosphere,
+      (value) =>
+        calculatePulseStrength(
+          value
+        )
+    );
+
+  /*
+    NEW:
+    fullscreen flash layer
+  */
+
+  const flashOpacity =
+    useTransform(
+      flashLayer,
+      [0, 1],
+      [0, 0.85]
+    );
+
+  /*
+    NEW:
+    emotion shockwave
+  */
+
+  const shockwaveScale =
+    useTransform(
+      shockwaveBurst,
+      [0, 1],
+      [1, 2.4]
+    );
+
+  const shockwaveOpacity =
+    useTransform(
+      atmosphere,
+      (value) =>
+        calculateShockwavePower(
+          value
+        )
+    );
+
+  /*
+    NEW:
+    breathing gradients
+  */
+
+  const breathingScale =
+    useTransform(
+      atmosphere,
       [0, 18],
-      [1, 1.08]
+      [1, 1.18]
+    );
+
+  /*
+    LIVE PULSE BURST
+  */
+
+  const reactivePulseScale =
+    useTransform(
+      pulseBurst,
+      [1, 1.24],
+      [1, 1.24]
+    );
+
+  /*
+    PARTICLE ENERGY
+  */
+
+  const particleOpacity =
+    useTransform(
+      particlesBoost,
+      [0, 1],
+      [0.18, 0.95]
     );
 
   return (
@@ -109,12 +284,43 @@ export default function FluxPage() {
         text-white
       "
     >
+      {/* FULLSCREEN FLASH LAYER */}
+
+      <motion.div
+        style={{
+          opacity:
+            flashOpacity,
+        }}
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          z-[60]
+          bg-white
+          mix-blend-soft-light
+        "
+      />
+
       {/* BASE ATMOSPHERE */}
 
       <motion.div
         style={{
           opacity:
             topAuraOpacity,
+          scale:
+            breathingScale,
+        }}
+        animate={{
+          scale: [
+            1,
+            1.08,
+            1,
+          ],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 12,
+          ease: "easeInOut",
         }}
         className="
           absolute
@@ -127,11 +333,40 @@ export default function FluxPage() {
         style={{
           opacity:
             bottomAuraOpacity,
+          scale:
+            breathingScale,
+        }}
+        animate={{
+          scale: [
+            1,
+            1.06,
+            1,
+          ],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 14,
+          ease: "easeInOut",
         }}
         className="
           absolute
           inset-0
           bg-[radial-gradient(circle_at_bottom,rgba(34,211,238,0.18),transparent_42%)]
+        "
+      />
+
+      {/* REACTIVE PULSE BURST */}
+
+      <motion.div
+        style={{
+          scale:
+            reactivePulseScale,
+        }}
+        className="
+          absolute
+          inset-0
+          z-[1]
+          bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_55%)]
         "
       />
 
@@ -245,6 +480,132 @@ export default function FluxPage() {
         "
       />
 
+      {/* SHOCKWAVE EXPLODE */}
+
+      <motion.div
+        style={{
+          scale:
+            shockwaveScale,
+          opacity:
+            shockwaveOpacity,
+        }}
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-1/2
+          z-[4]
+          h-[900px]
+          w-[900px]
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          border
+          border-fuchsia-400/25
+          blur-[2px]
+        "
+      />
+
+      <motion.div
+        style={{
+          scale:
+            shockwaveScale,
+          opacity:
+            shockwaveOpacity,
+        }}
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-1/2
+          z-[3]
+          h-[620px]
+          w-[620px]
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          border
+          border-cyan-300/20
+        "
+      />
+
+      {/* REACTIVE PARTICLES */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          z-[2]
+          overflow-hidden
+        "
+      >
+        {Array.from({
+          length: 28,
+        }).map((_, i) => (
+          <motion.div
+            key={i}
+            style={{
+              width: `${
+                2 +
+                (i % 4)
+              }px`,
+              height: `${
+                2 +
+                (i % 4)
+              }px`,
+              left: `${
+                (i * 4.2) %
+                100
+              }%`,
+              top: `${
+                62 +
+                ((i * 5) %
+                  24)
+              }%`,
+              opacity:
+                particleOpacity,
+            }}
+            animate={{
+              y: [
+                0,
+                -160,
+              ],
+              opacity: [
+                0,
+                1,
+                0,
+              ],
+              x: [
+                0,
+                i % 2 === 0
+                  ? 40
+                  : -40,
+              ],
+              scale: [
+                0.8,
+                1.4,
+                0.6,
+              ],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration:
+                5 + i * 0.24,
+              delay:
+                i * 0.08,
+              ease: "linear",
+            }}
+            className="
+              absolute
+              rounded-full
+              bg-white/40
+              blur-[1px]
+            "
+          />
+        ))}
+      </div>
+
       {/* GRAIN */}
 
       <div
@@ -291,8 +652,6 @@ export default function FluxPage() {
           pt-6
         "
       >
-        {/* BRAND */}
-
         <div>
           <p
             className="
@@ -317,8 +676,6 @@ export default function FluxPage() {
             emotional feed system
           </p>
         </div>
-
-        {/* LIVE */}
 
         <motion.div
           animate={{
@@ -370,105 +727,6 @@ export default function FluxPage() {
           px-4
         "
       >
-        {/* LEFT AMBIENT */}
-
-        <motion.div
-          animate={{
-            opacity: [
-              0.22,
-              0.35,
-              0.22,
-            ],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 6,
-          }}
-          className="
-            absolute
-            left-5
-            top-[24%]
-            hidden
-            max-w-[180px]
-            xl:block
-          "
-        >
-          <p
-            className="
-              text-[10px]
-              uppercase
-              tracking-[0.28em]
-              text-white/22
-            "
-          >
-            emotional signal
-          </p>
-
-          <p
-            className="
-              mt-4
-              text-sm
-              leading-relaxed
-              text-white/42
-            "
-          >
-            很多人其實不是不痛苦，
-            <br />
-            只是已經習慣沉默。
-          </p>
-        </motion.div>
-
-        {/* RIGHT AMBIENT */}
-
-        <motion.div
-          animate={{
-            opacity: [
-              0.2,
-              0.34,
-              0.2,
-            ],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 7,
-          }}
-          className="
-            absolute
-            right-5
-            top-[28%]
-            hidden
-            text-right
-            xl:block
-          "
-        >
-          <p
-            className="
-              text-[10px]
-              uppercase
-              tracking-[0.28em]
-              text-white/22
-            "
-          >
-            live emotional trend
-          </p>
-
-          <div className="mt-4 space-y-3">
-            <p className="text-sm text-white/40">
-              loneliness ↑
-            </p>
-
-            <p className="text-sm text-white/26">
-              emotional fatigue
-            </p>
-
-            <p className="text-sm text-white/26">
-              unread anxiety
-            </p>
-          </div>
-        </motion.div>
-
-        {/* SWIPE CORE */}
-
         <motion.div
           style={{
             scale: pulseScale,
