@@ -8,6 +8,10 @@ import {
   processEmotionRuntime,
 } from "../lib/emotionRuntime";
 
+import {
+  evolveUniverse,
+} from "./universeEvolution";
+
 export function useEmotionRuntime() {
   useEffect(() => {
     let frameId = 0;
@@ -35,9 +39,22 @@ export function useEmotionRuntime() {
         const store =
           useFluxStore.getState();
 
-        const result =
+        /*
+          runtime simulation
+        */
+
+        const runtimeResult =
           processEmotionRuntime(
             store.vector
+          );
+
+        /*
+          universe evolution
+        */
+
+        const evolvedVector =
+          evolveUniverse(
+            runtimeResult.vector
           );
 
         /*
@@ -47,17 +64,17 @@ export function useEmotionRuntime() {
 
         useFluxStore.setState({
           vector:
-            result.vector,
+            evolvedVector,
 
           universe: {
             ...store.universe,
 
             atmosphere:
-              result.instability *
+              runtimeResult.instability *
               10,
 
             pulse:
-              result.temperature *
+              runtimeResult.temperature *
               0.06,
           },
         });
