@@ -13,7 +13,11 @@ type Props = {
   card: EmotionCard;
 
   onSwipe: (
-    direction: "left" | "right"
+    direction:
+      | "left"
+      | "right"
+      | "up"
+      | "down"
   ) => void;
 };
 
@@ -21,7 +25,13 @@ export default function SwipeCard({
   card,
   onSwipe,
 }: Props) {
+  /*
+    MOTION
+  */
+
   const x = useMotionValue(0);
+
+  const y = useMotionValue(0);
 
   /*
     ROTATION
@@ -31,6 +41,16 @@ export default function SwipeCard({
     x,
     [-260, 260],
     [-18, 18]
+  );
+
+  /*
+    DEPTH FEEL
+  */
+
+  const cardScale = useTransform(
+    x,
+    [-260, 0, 260],
+    [0.96, 1, 0.96]
   );
 
   /*
@@ -49,15 +69,18 @@ export default function SwipeCard({
     [1, 0]
   );
 
-  /*
-    SCALE FEEL
-  */
-
-  const cardScale = useTransform(
-    x,
-    [-260, 0, 260],
-    [0.97, 1, 0.97]
+  const topOpacity = useTransform(
+    y,
+    [-140, -20],
+    [1, 0]
   );
+
+  const bottomOpacity =
+    useTransform(
+      y,
+      [20, 140],
+      [0, 1]
+    );
 
   /*
     GLOW PARALLAX
@@ -69,15 +92,43 @@ export default function SwipeCard({
     [-55, 55]
   );
 
+  const glowY = useTransform(
+    y,
+    [-260, 260],
+    [-40, 40]
+  );
+
   /*
     LIVE META
   */
 
   const metaOpacity = useTransform(
     x,
-    [-120, 0, 120],
+    [-180, 0, 180],
     [0.35, 1, 0.35]
   );
+
+  /*
+    ATMOSPHERE
+  */
+
+  const cardBrightness =
+    useTransform(
+      y,
+      [-220, 0, 220],
+      [1.12, 1, 0.82]
+    );
+
+  /*
+    BACKGROUND ENERGY
+  */
+
+  const auraOpacity =
+    useTransform(
+      x,
+      [-220, 0, 220],
+      [0.8, 0, 0.8]
+    );
 
   /*
     VIBE STYLES
@@ -142,42 +193,59 @@ export default function SwipeCard({
       card.vibe || "soft"
     ];
 
+  /*
+    SWIPE ENGINE
+  */
+
   async function handleDragEnd(
     _: any,
     info: any
   ) {
-    const offset =
+    const offsetX =
       info.offset.x;
 
-    const velocity =
+    const offsetY =
+      info.offset.y;
+
+    const velocityX =
       info.velocity.x;
 
-    /*
-      NATURAL SWIPE DETECTION
-    */
-
-    const shouldSwipeRight =
-      offset > 110 ||
-      velocity > 650;
-
-    const shouldSwipeLeft =
-      offset < -110 ||
-      velocity < -650;
+    const velocityY =
+      info.velocity.y;
 
     /*
-      FLY RIGHT
+      strongest direction wins
     */
 
-    if (shouldSwipeRight) {
-      await animate(
-        x,
-        900,
-        {
+    const horizontalPower =
+      Math.abs(offsetX) +
+      Math.abs(velocityX);
+
+    const verticalPower =
+      Math.abs(offsetY) +
+      Math.abs(velocityY);
+
+    /*
+      RIGHT
+    */
+
+    if (
+      horizontalPower >
+        verticalPower &&
+      (offsetX > 120 ||
+        velocityX > 700)
+    ) {
+      await Promise.all([
+        animate(x, 900, {
           type: "spring",
           stiffness: 220,
           damping: 24,
-        }
-      );
+        }),
+
+        animate(y, offsetY * 0.4, {
+          duration: 0.2,
+        }),
+      ]);
 
       onSwipe("right");
 
@@ -185,21 +253,82 @@ export default function SwipeCard({
     }
 
     /*
-      FLY LEFT
+      LEFT
     */
 
-    if (shouldSwipeLeft) {
-      await animate(
-        x,
-        -900,
-        {
+    if (
+      horizontalPower >
+        verticalPower &&
+      (offsetX < -120 ||
+        velocityX < -700)
+    ) {
+      await Promise.all([
+        animate(x, -900, {
           type: "spring",
           stiffness: 220,
           damping: 24,
-        }
-      );
+        }),
+
+        animate(y, offsetY * 0.4, {
+          duration: 0.2,
+        }),
+      ]);
 
       onSwipe("left");
+
+      return;
+    }
+
+    /*
+      UP
+    */
+
+    if (
+      verticalPower >
+        horizontalPower &&
+      (offsetY < -120 ||
+        velocityY < -700)
+    ) {
+      await Promise.all([
+        animate(y, -1000, {
+          type: "spring",
+          stiffness: 220,
+          damping: 24,
+        }),
+
+        animate(x, offsetX * 0.35, {
+          duration: 0.2,
+        }),
+      ]);
+
+      onSwipe("up");
+
+      return;
+    }
+
+    /*
+      DOWN
+    */
+
+    if (
+      verticalPower >
+        horizontalPower &&
+      (offsetY > 120 ||
+        velocityY > 700)
+    ) {
+      await Promise.all([
+        animate(y, 1000, {
+          type: "spring",
+          stiffness: 220,
+          damping: 24,
+        }),
+
+        animate(x, offsetX * 0.35, {
+          duration: 0.2,
+        }),
+      ]);
+
+      onSwipe("down");
 
       return;
     }
@@ -213,16 +342,24 @@ export default function SwipeCard({
       stiffness: 420,
       damping: 30,
     });
+
+    animate(y, 0, {
+      type: "spring",
+      stiffness: 420,
+      damping: 30,
+    });
   }
 
   return (
     <motion.div
-      drag="x"
-      dragElastic={0.18}
+      drag
+      dragElastic={0.14}
       dragMomentum={true}
       dragConstraints={{
         left: 0,
         right: 0,
+        top: 0,
+        bottom: 0,
       }}
       whileTap={{
         scale: 0.985,
@@ -230,8 +367,14 @@ export default function SwipeCard({
       }}
       style={{
         x,
+        y,
         rotate,
         scale: cardScale,
+        filter: useTransform(
+          cardBrightness,
+          (v) =>
+            `brightness(${v})`
+        ),
       }}
       onDragEnd={handleDragEnd}
       initial={{
@@ -273,7 +416,21 @@ export default function SwipeCard({
         ${vibe.border}
       `}
     >
-      {/* BACKGROUND GLOW */}
+      {/* EMOTIONAL FIELD */}
+
+      <motion.div
+        style={{
+          opacity: auraOpacity,
+        }}
+        className="
+          absolute
+          inset-[-20%]
+          bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_60%)]
+          blur-3xl
+        "
+      />
+
+      {/* BACKGROUND */}
 
       <div
         className={`
@@ -304,6 +461,7 @@ export default function SwipeCard({
       <motion.div
         style={{
           x: glowX,
+          y: glowY,
         }}
         className={`
           absolute
@@ -343,7 +501,7 @@ export default function SwipeCard({
         "
       />
 
-      {/* RIGHT OVERLAY */}
+      {/* RIGHT */}
 
       <motion.div
         style={{
@@ -367,10 +525,10 @@ export default function SwipeCard({
           backdrop-blur-xl
         "
       >
-        很像我
+        RESONATE
       </motion.div>
 
-      {/* LEFT OVERLAY */}
+      {/* LEFT */}
 
       <motion.div
         style={{
@@ -394,7 +552,63 @@ export default function SwipeCard({
           backdrop-blur-xl
         "
       >
-        不像我
+        REJECT
+      </motion.div>
+
+      {/* UP */}
+
+      <motion.div
+        style={{
+          opacity: topOpacity,
+          scale: topOpacity,
+        }}
+        className="
+          absolute
+          left-1/2
+          top-6
+          z-20
+          -translate-x-1/2
+          rounded-full
+          border
+          border-violet-400/30
+          bg-violet-500/10
+          px-5
+          py-2
+          text-[11px]
+          tracking-[0.28em]
+          text-violet-200
+          backdrop-blur-xl
+        "
+      >
+        TOO INTENSE
+      </motion.div>
+
+      {/* DOWN */}
+
+      <motion.div
+        style={{
+          opacity: bottomOpacity,
+          scale: bottomOpacity,
+        }}
+        className="
+          absolute
+          bottom-6
+          left-1/2
+          z-20
+          -translate-x-1/2
+          rounded-full
+          border
+          border-cyan-400/30
+          bg-cyan-500/10
+          px-5
+          py-2
+          text-[11px]
+          tracking-[0.28em]
+          text-cyan-100
+          backdrop-blur-xl
+        "
+      >
+        SUPPRESS
       </motion.div>
 
       {/* TOP META */}
@@ -404,7 +618,7 @@ export default function SwipeCard({
           absolute
           left-1/2
           top-7
-          z-20
+          z-10
           -translate-x-1/2
           text-[10px]
           uppercase
@@ -428,8 +642,6 @@ export default function SwipeCard({
           justify-center
         "
       >
-        {/* EMOJI */}
-
         <motion.div
           animate={{
             y: [0, -10, 0],
@@ -449,8 +661,6 @@ export default function SwipeCard({
           {card.emoji}
         </motion.div>
 
-        {/* TITLE */}
-
         <h2
           className={`
             max-w-[290px]
@@ -463,8 +673,6 @@ export default function SwipeCard({
         >
           {card.text}
         </h2>
-
-        {/* SUBTEXT */}
 
         {card.subtext && (
           <p
@@ -480,8 +688,6 @@ export default function SwipeCard({
           </p>
         )}
 
-        {/* MICRO COPY */}
-
         <p
           className="
             mt-8
@@ -490,17 +696,15 @@ export default function SwipeCard({
             text-white/22
           "
         >
-          有些情緒，
+          真正的情緒，
           <br />
-          不需要解釋也會被理解。
+          往往都藏在猶豫裡。
         </p>
       </div>
 
       {/* BOTTOM */}
 
       <div className="relative z-10">
-        {/* LIVE META */}
-
         <motion.div
           style={{
             opacity: metaOpacity,
@@ -525,10 +729,8 @@ export default function SwipeCard({
         >
           <div className="h-2 w-2 rounded-full bg-white/50" />
 
-          78% people felt this too
+          emotional reaction detected
         </motion.div>
-
-        {/* FOOTER */}
 
         <p
           className="
@@ -538,7 +740,7 @@ export default function SwipeCard({
             text-white/15
           "
         >
-          跟著直覺滑動 →
+          follow your emotional instinct →
         </p>
       </div>
     </motion.div>

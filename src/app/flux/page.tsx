@@ -1,51 +1,247 @@
+"use client";
+
+import { useEffect } from "react";
+
 import SwipeDeck from "@/features/swipe/components/SwipeDeck";
 
+import { useFluxStore } from "@/stores/fluxStore";
+
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  animate,
+} from "framer-motion";
+
 export default function FluxPage() {
+  const { vector } =
+    useFluxStore();
+
+  /*
+    EMOTIONAL ATMOSPHERE
+  */
+
+  const atmosphere =
+    useMotionValue(0);
+
+  /*
+    dynamic atmosphere
+  */
+
+  useEffect(() => {
+    const totalEmotion =
+      vector.loneliness +
+      vector.anxiety +
+      vector.validation +
+      vector.intimacy +
+      vector.avoidance +
+      vector.resonance +
+      vector.rejection +
+      vector.obsession +
+      vector.emotionalIntensity +
+      vector.suppression;
+
+    animate(
+      atmosphere,
+      Math.min(
+        totalEmotion,
+        18
+      ),
+      {
+        duration: 1.2,
+      }
+    );
+  }, [
+    vector,
+    atmosphere,
+  ]);
+
+  /*
+    background reactions
+  */
+
+  const topAuraOpacity =
+    useTransform(
+      atmosphere,
+      [0, 18],
+      [0.12, 0.28]
+    );
+
+  const bottomAuraOpacity =
+    useTransform(
+      atmosphere,
+      [0, 18],
+      [0.08, 0.22]
+    );
+
+  const sideAuraOpacity =
+    useTransform(
+      atmosphere,
+      [0, 18],
+      [0.08, 0.18]
+    );
+
+  const overlayOpacity =
+    useTransform(
+      atmosphere,
+      [0, 18],
+      [0.3, 0.5]
+    );
+
+  /*
+    emotional pulse
+  */
+
+  const pulseScale =
+    useTransform(
+      atmosphere,
+      [0, 18],
+      [1, 1.08]
+    );
+
   return (
     <main
       className="
-        relative
-        min-h-screen
+        fixed
+        inset-0
         overflow-hidden
         bg-black
         text-white
       "
     >
-      {/* ATMOSPHERE */}
+      {/* BASE ATMOSPHERE */}
 
-      <div
+      <motion.div
+        style={{
+          opacity:
+            topAuraOpacity,
+        }}
         className="
           absolute
           inset-0
-          bg-[radial-gradient(circle_at_top,rgba(120,119,198,0.18),transparent_40%)]
+          bg-[radial-gradient(circle_at_top,rgba(124,92,255,0.22),transparent_38%)]
         "
       />
 
-      <div
+      <motion.div
+        style={{
+          opacity:
+            bottomAuraOpacity,
+        }}
         className="
           absolute
-          top-1/3
+          inset-0
+          bg-[radial-gradient(circle_at_bottom,rgba(34,211,238,0.18),transparent_42%)]
+        "
+      />
+
+      {/* AURA LIGHTS */}
+
+      <motion.div
+        style={{
+          scale: pulseScale,
+          opacity:
+            topAuraOpacity,
+        }}
+        animate={{
+          y: [0, -10, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 7,
+          ease: "easeInOut",
+        }}
+        className="
+          absolute
           left-1/2
-          h-[600px]
-          w-[600px]
+          top-[12%]
+          h-[480px]
+          w-[480px]
           -translate-x-1/2
           rounded-full
           bg-fuchsia-500/10
-          blur-3xl
+          blur-[140px]
         "
       />
 
-      <div
+      <motion.div
+        style={{
+          scale: pulseScale,
+          opacity:
+            bottomAuraOpacity,
+        }}
+        animate={{
+          y: [0, 14, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 8,
+          ease: "easeInOut",
+        }}
         className="
           absolute
-          bottom-0
+          bottom-[-120px]
           left-1/2
-          h-[500px]
-          w-[500px]
+          h-[420px]
+          w-[420px]
           -translate-x-1/2
           rounded-full
-          bg-cyan-500/10
-          blur-3xl
+          bg-cyan-400/10
+          blur-[120px]
+        "
+      />
+
+      <motion.div
+        style={{
+          opacity:
+            sideAuraOpacity,
+        }}
+        animate={{
+          x: [0, -12, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 9,
+          ease: "easeInOut",
+        }}
+        className="
+          absolute
+          right-[-120px]
+          top-1/3
+          h-[260px]
+          w-[260px]
+          rounded-full
+          bg-violet-500/10
+          blur-[100px]
+        "
+      />
+
+      {/* EXTRA EMOTIONAL FIELD */}
+
+      <motion.div
+        style={{
+          opacity:
+            sideAuraOpacity,
+          scale: pulseScale,
+        }}
+        animate={{
+          x: [0, 12, 0],
+          y: [0, -8, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 10,
+          ease: "easeInOut",
+        }}
+        className="
+          absolute
+          left-[-120px]
+          top-[36%]
+          h-[320px]
+          w-[320px]
+          rounded-full
+          bg-rose-500/10
+          blur-[120px]
         "
       />
 
@@ -55,7 +251,8 @@ export default function FluxPage() {
         className="
           absolute
           inset-0
-          opacity-[0.03]
+          opacity-[0.025]
+          mix-blend-screen
           pointer-events-none
         "
         style={{
@@ -64,139 +261,295 @@ export default function FluxPage() {
         }}
       />
 
-      {/* CONTENT */}
+      {/* DARK OVERLAY */}
+
+      <motion.div
+        style={{
+          opacity:
+            overlayOpacity,
+        }}
+        className="
+          absolute
+          inset-0
+          bg-black
+        "
+      />
+
+      {/* TOP HUD */}
 
       <div
         className="
-          relative
-          z-10
+          absolute
+          left-0
+          top-0
+          z-30
           flex
-          min-h-screen
-          flex-col
-          items-center
-          justify-center
+          w-full
+          items-start
+          justify-between
           px-5
-          py-14
+          pt-6
         "
       >
-        {/* TOP STATUS */}
+        {/* BRAND */}
 
-        <div
+        <div>
+          <p
+            className="
+              text-[1.7rem]
+              font-semibold
+              tracking-[0.28em]
+              text-white
+            "
+          >
+            FLUXY
+          </p>
+
+          <p
+            className="
+              mt-2
+              text-[10px]
+              uppercase
+              tracking-[0.28em]
+              text-white/28
+            "
+          >
+            emotional feed system
+          </p>
+        </div>
+
+        {/* LIVE */}
+
+        <motion.div
+          animate={{
+            scale: [1, 1.04, 1],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 2.2,
+          }}
           className="
-            mb-8
             flex
             items-center
             gap-2
             rounded-full
             border
-            border-white/10
-            bg-white/[0.04]
-            px-4
-            py-2
+            border-emerald-400/15
+            bg-emerald-400/10
+            px-3
+            py-1.5
             backdrop-blur-xl
           "
         >
-          <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-
-          <p className="text-xs tracking-[0.2em] text-white/40 uppercase">
-            live emotional scan
-          </p>
-        </div>
-
-        {/* HERO */}
-
-        <div className="mb-14 text-center">
-          {/* EYEBROW */}
+          <div className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
 
           <p
             className="
-              mb-5
-              text-xs
+              text-[10px]
               uppercase
-              tracking-[0.35em]
-              text-white/25
+              tracking-[0.22em]
+              text-emerald-200
             "
           >
-            FLUXY emotional flow
+            live
           </p>
+        </motion.div>
+      </div>
 
-          {/* TITLE */}
+      {/* CENTER EXPERIENCE */}
 
-          <h1
+      <div
+        className="
+          relative
+          z-20
+          flex
+          h-full
+          w-full
+          items-center
+          justify-center
+          px-4
+        "
+      >
+        {/* LEFT AMBIENT */}
+
+        <motion.div
+          animate={{
+            opacity: [
+              0.22,
+              0.35,
+              0.22,
+            ],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 6,
+          }}
+          className="
+            absolute
+            left-5
+            top-[24%]
+            hidden
+            max-w-[180px]
+            xl:block
+          "
+        >
+          <p
             className="
-              text-5xl
-              font-semibold
-              leading-[1.05]
-              tracking-tight
-              md:text-6xl
+              text-[10px]
+              uppercase
+              tracking-[0.28em]
+              text-white/22
             "
           >
-            有些情緒，
-            <br />
-            其實你藏了很久。
-          </h1>
-
-          {/* SUBTITLE */}
+            emotional signal
+          </p>
 
           <p
             className="
-              mx-auto
-              mt-6
-              max-w-md
-              text-base
+              mt-4
+              text-sm
               leading-relaxed
-              text-white/40
+              text-white/42
             "
           >
-            滑過這些情緒碎片。
+            很多人其實不是不痛苦，
             <br />
-            AI 會慢慢看見，
-            你沒說出口的那部分。
+            只是已經習慣沉默。
+          </p>
+        </motion.div>
+
+        {/* RIGHT AMBIENT */}
+
+        <motion.div
+          animate={{
+            opacity: [
+              0.2,
+              0.34,
+              0.2,
+            ],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 7,
+          }}
+          className="
+            absolute
+            right-5
+            top-[28%]
+            hidden
+            text-right
+            xl:block
+          "
+        >
+          <p
+            className="
+              text-[10px]
+              uppercase
+              tracking-[0.28em]
+              text-white/22
+            "
+          >
+            live emotional trend
           </p>
 
-          {/* LIVE META */}
+          <div className="mt-4 space-y-3">
+            <p className="text-sm text-white/40">
+              loneliness ↑
+            </p>
 
-          <div
-            className="
-              mt-8
-              flex
-              items-center
-              justify-center
-              gap-3
-              text-sm
-              text-white/25
-            "
-          >
-            <span>14,291 people online</span>
+            <p className="text-sm text-white/26">
+              emotional fatigue
+            </p>
 
-            <span className="text-white/10">—</span>
+            <p className="text-sm text-white/26">
+              unread anxiety
+            </p>
+          </div>
+        </motion.div>
 
-            <span>loneliness trending now</span>
+        {/* SWIPE CORE */}
+
+        <motion.div
+          style={{
+            scale: pulseScale,
+          }}
+          className="relative z-20"
+        >
+          <SwipeDeck />
+        </motion.div>
+      </div>
+
+      {/* BOTTOM HUD */}
+
+      <motion.div
+        animate={{
+          y: [0, -3, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 6,
+        }}
+        className="
+          absolute
+          bottom-0
+          left-0
+          z-30
+          w-full
+          px-6
+          pb-8
+        "
+      >
+        <div
+          className="
+            mx-auto
+            flex
+            max-w-md
+            items-center
+            justify-between
+            rounded-full
+            border
+            border-white/10
+            bg-white/[0.04]
+            px-5
+            py-3
+            backdrop-blur-2xl
+          "
+        >
+          <div>
+            <p
+              className="
+                text-[10px]
+                uppercase
+                tracking-[0.24em]
+                text-white/22
+              "
+            >
+              active emotion
+            </p>
+
+            <p className="mt-1 text-sm text-white/70">
+              suppressed thoughts
+            </p>
+          </div>
+
+          <div className="text-right">
+            <p
+              className="
+                text-[10px]
+                uppercase
+                tracking-[0.24em]
+                text-white/22
+              "
+            >
+              online now
+            </p>
+
+            <p className="mt-1 text-sm text-white/70">
+              14,291
+            </p>
           </div>
         </div>
-
-        {/* SWIPE EXPERIENCE */}
-
-        <div className="relative">
-          <SwipeDeck />
-        </div>
-
-        {/* BOTTOM TEXT */}
-
-        <div className="mt-12 text-center">
-          <p
-            className="
-              text-sm
-              leading-relaxed
-              text-white/20
-            "
-          >
-            不需要解釋自己。
-            <br />
-            只要跟著感覺滑動。
-          </p>
-        </div>
-      </div>
+      </motion.div>
     </main>
   );
 }

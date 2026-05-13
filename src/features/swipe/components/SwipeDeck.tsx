@@ -38,6 +38,13 @@ const dynamicMessages = [
   "有些選擇，比你以為的更真實",
 ];
 
+type GestureState =
+  | "idle"
+  | "resonate"
+  | "reject"
+  | "intense"
+  | "suppress";
+
 export default function SwipeDeck() {
   const router = useRouter();
 
@@ -52,33 +59,24 @@ export default function SwipeDeck() {
   const [hydrated, setHydrated] =
     useState(false);
 
-  /*
-    ai reaction
-  */
-
   const [aiMessage, setAiMessage] =
     useState("");
-
-  /*
-    live world feeling
-  */
 
   const [liveMessage, setLiveMessage] =
     useState(liveStats[0]);
 
-  /*
-    transition lock
-  */
-
   const [isTransitioning, setIsTransitioning] =
     useState(false);
 
-  /*
-    prevent restore loop
-  */
-
   const [hasRestored, setHasRestored] =
     useState(false);
+
+  /*
+    emotional gesture state
+  */
+
+  const [gestureState, setGestureState] =
+    useState<GestureState>("idle");
 
   /*
     hydration
@@ -89,7 +87,7 @@ export default function SwipeDeck() {
   }, []);
 
   /*
-    restore progress only once
+    restore
   */
 
   useEffect(() => {
@@ -107,7 +105,7 @@ export default function SwipeDeck() {
   ]);
 
   /*
-    rotating live feed
+    rotating feed
   */
 
   useEffect(() => {
@@ -151,7 +149,11 @@ export default function SwipeDeck() {
   */
 
   function handleSwipe(
-    direction: "left" | "right"
+    direction:
+      | "left"
+      | "right"
+      | "up"
+      | "down"
   ) {
     if (
       !currentCard ||
@@ -163,33 +165,111 @@ export default function SwipeDeck() {
     setIsTransitioning(true);
 
     /*
-      emotion accumulation
+      emotional reactions
     */
 
     if (direction === "right") {
+      setGestureState(
+        "resonate"
+      );
+
+      /*
+        resonance
+      */
+
       addEmotion(
         currentCard.id,
-        currentCard.weights
+        {
+          ...currentCard.weights,
+          resonance: 1,
+        }
+      );
+    }
+
+    if (direction === "left") {
+      setGestureState("reject");
+
+      /*
+        rejection
+      */
+
+      addEmotion(
+        currentCard.id,
+        {
+          rejection: 1,
+        }
+      );
+    }
+
+    if (direction === "up") {
+      setGestureState("intense");
+
+      /*
+        amplification
+      */
+
+      addEmotion(
+        currentCard.id,
+        {
+          ...currentCard.weights,
+          obsession: 1.4,
+          emotionalIntensity: 1,
+        }
+      );
+    }
+
+    if (direction === "down") {
+      setGestureState("suppress");
+
+      /*
+        suppression
+      */
+
+      addEmotion(
+        currentCard.id,
+        {
+          suppression: 1.2,
+          avoidance: 1,
+        }
       );
     }
 
     /*
-      ai reply
+      ai response
     */
 
-    const reply =
-      direction === "right"
-        ? currentCard.aiReply
-            ?.resonate
-        : currentCard.aiReply
-            ?.reject;
+    let reply = "";
+
+    if (direction === "right") {
+      reply =
+        currentCard.aiReply
+          ?.resonate ||
+        "你對這個情緒產生了共鳴。";
+    }
+
+    if (direction === "left") {
+      reply =
+        currentCard.aiReply
+          ?.reject ||
+        "你正在抗拒這個情緒。";
+    }
+
+    if (direction === "up") {
+      reply =
+        "你放大了這個情緒。";
+    }
+
+    if (direction === "down") {
+      reply =
+        "你選擇把情緒壓了下去。";
+    }
 
     if (reply) {
       setAiMessage(reply);
     }
 
     /*
-      dynamic live feeling
+      live emotional update
     */
 
     const randomDynamic =
@@ -207,7 +287,7 @@ export default function SwipeDeck() {
     const nextIndex = index + 1;
 
     /*
-      final transition
+      result
     */
 
     if (
@@ -229,6 +309,8 @@ export default function SwipeDeck() {
 
     setTimeout(() => {
       setAiMessage("");
+
+      setGestureState("idle");
 
       setIndex(nextIndex);
 
@@ -256,8 +338,77 @@ export default function SwipeDeck() {
     );
   }
 
+  /*
+    gesture visuals
+  */
+
+  const gestureLabel =
+    gestureState ===
+    "resonate"
+      ? "resonating..."
+      : gestureState ===
+        "reject"
+      ? "rejecting..."
+      : gestureState ===
+        "intense"
+      ? "too intense..."
+      : gestureState ===
+        "suppress"
+      ? "emotion suppressed..."
+      : "";
+
   return (
     <div className="flex w-full flex-col items-center">
+      {/* EMOTIONAL AURA */}
+
+      <AnimatePresence>
+        {gestureState !== "idle" && (
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 0.8,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 1.2,
+            }}
+            transition={{
+              duration: 0.5,
+            }}
+            className="
+              pointer-events-none
+              absolute
+              left-1/2
+              top-1/2
+              z-0
+              h-[420px]
+              w-[420px]
+              -translate-x-1/2
+              -translate-y-1/2
+              rounded-full
+              blur-[120px]
+            "
+            style={{
+              background:
+                gestureState ===
+                "resonate"
+                  ? "rgba(255,255,255,0.14)"
+                  : gestureState ===
+                    "intense"
+                  ? "rgba(168,85,247,0.16)"
+                  : gestureState ===
+                    "suppress"
+                  ? "rgba(34,211,238,0.12)"
+                  : "rgba(120,120,255,0.12)",
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       {/* LIVE BAR */}
 
       <motion.div
@@ -270,6 +421,8 @@ export default function SwipeDeck() {
           y: 0,
         }}
         className="
+          relative
+          z-10
           mb-5
           flex
           w-full
@@ -338,7 +491,7 @@ export default function SwipeDeck() {
 
       {/* PROGRESS */}
 
-      <div className="mb-6 w-full max-w-[360px]">
+      <div className="relative z-10 mb-6 w-full max-w-[360px]">
         <div
           className="
             mb-3
@@ -436,9 +589,41 @@ export default function SwipeDeck() {
         </div>
       </div>
 
+      {/* GESTURE STATE */}
+
+      <div className="relative z-10 mb-4 h-[28px]">
+        <AnimatePresence mode="wait">
+          {gestureLabel && (
+            <motion.p
+              key={gestureLabel}
+              initial={{
+                opacity: 0,
+                y: 10,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                y: -10,
+              }}
+              className="
+                text-sm
+                tracking-[0.18em]
+                text-white/32
+                uppercase
+              "
+            >
+              {gestureLabel}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+
       {/* AI FEELING */}
 
-      <div className="mb-4 flex h-[82px] items-center justify-center">
+      <div className="relative z-10 mb-4 flex h-[82px] items-center justify-center">
         <AnimatePresence mode="wait">
           {aiMessage && (
             <motion.div
@@ -516,8 +701,6 @@ export default function SwipeDeck() {
       {/* CARD STACK */}
 
       <div className="relative h-[580px] w-[340px] max-w-full">
-        {/* BACK CARD */}
-
         {nextCard && (
           <motion.div
             animate={{
@@ -537,8 +720,6 @@ export default function SwipeDeck() {
           />
         )}
 
-        {/* MID CARD */}
-
         {nextCard && (
           <motion.div
             animate={{
@@ -556,8 +737,6 @@ export default function SwipeDeck() {
             "
           />
         )}
-
-        {/* ACTIVE CARD */}
 
         <AnimatePresence mode="wait">
           <SwipeCard
@@ -592,9 +771,13 @@ export default function SwipeDeck() {
           text-white/28
         "
       >
-        <span>
-          ← 不像我
-        </span>
+        <div className="flex items-center gap-3">
+          <span>← reject</span>
+
+          <span className="text-white/12">
+            ↑ intense
+          </span>
+        </div>
 
         <div
           className="
@@ -605,9 +788,13 @@ export default function SwipeDeck() {
           "
         />
 
-        <span>
-          很像我 →
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-white/12">
+            suppress ↓
+          </span>
+
+          <span>resonate →</span>
+        </div>
       </motion.div>
 
       {/* FOOTNOTE */}
@@ -621,9 +808,9 @@ export default function SwipeDeck() {
           text-white/16
         "
       >
-        每一次滑動，
+        AI 不只在分析答案。
         <br />
-        都正在形成你的情緒輪廓。
+        也正在讀取你的情緒節奏。
       </p>
     </div>
   );
