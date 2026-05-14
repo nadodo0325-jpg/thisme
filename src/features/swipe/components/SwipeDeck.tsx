@@ -447,11 +447,9 @@ export default function SwipeDeck() {
   */
 
   if (!currentCard) {
-    return (
-      <div className="text-white/30">
-        generating result...
-      </div>
-    );
+  router.push("/flux/result");
+
+  return null;
   }
 
   return (
