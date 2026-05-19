@@ -14,6 +14,8 @@ import {
   calculateShockwavePower,
 } from "@/features/swipe/lib/emotionUniverse";
 
+import { runtimeDebug } from "@/features/swipe/runtime/runtimeDebug";
+
 import {
   motion,
   useMotionValue,
@@ -22,6 +24,10 @@ import {
 } from "framer-motion";
 
 export default function FluxPage() {
+  runtimeDebug(
+    "PAGE_RENDER"
+  );
+
   const {
     vector,
     universe,
@@ -555,13 +561,11 @@ export default function FluxPage() {
                 (i % 4)
               }px`,
               left: `${
-                (i * 4.2) %
-                100
+                (i * 4.2) % 100
               }%`,
               top: `${
                 62 +
-                ((i * 5) %
-                  24)
+                ((i * 5) % 24)
               }%`,
               opacity:
                 particleOpacity,

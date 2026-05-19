@@ -4,6 +4,8 @@ import { create } from "zustand";
 
 import { persist } from "zustand/middleware";
 
+import { runtimeDebug } from "@/features/swipe/runtime/runtimeDebug";
+
 export type EmotionVector = {
   loneliness: number;
   anxiety: number;
@@ -155,7 +157,8 @@ export const useFluxStore =
       (set) => ({
         emotions: [],
 
-        vector: createInitialVector(),
+        vector:
+          createInitialVector(),
 
         /*
           UNIVERSE
@@ -184,6 +187,14 @@ export const useFluxStore =
 
               return state;
             }
+
+            runtimeDebug(
+              "VECTOR_UPDATE",
+              {
+                id,
+                weights,
+              }
+            );
 
             updatedVector = {
               loneliness:
@@ -257,7 +268,8 @@ export const useFluxStore =
                 id,
               ],
 
-              vector: updatedVector,
+              vector:
+                updatedVector,
             };
           });
 
@@ -271,7 +283,15 @@ export const useFluxStore =
         triggerUniverse: (
           mood,
           intensity = 1
-        ) =>
+        ) => {
+          runtimeDebug(
+            "UNIVERSE_EVENT",
+            {
+              mood,
+              intensity,
+            }
+          );
+
           set((state) => ({
             universe: {
               ...state.universe,
@@ -295,7 +315,8 @@ export const useFluxStore =
               shockwave:
                 Date.now(),
             },
-          })),
+          }));
+        },
 
         /*
           SWIPE IMPULSE
@@ -384,6 +405,32 @@ export const useFluxStore =
 
       {
         name: "fluxy-emotions",
+
+        onRehydrateStorage:
+          () => {
+            runtimeDebug(
+              "HYDRATION_START"
+            );
+
+            return (
+              state
+            ) => {
+              runtimeDebug(
+                "HYDRATION_FINISH",
+                {
+                  emotions:
+                    state
+                      ?.emotions
+                      ?.length,
+
+                  mood:
+                    state
+                      ?.universe
+                      ?.mood,
+                }
+              );
+            };
+          },
       }
     )
   );

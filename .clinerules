@@ -1,0 +1,77 @@
+# FLUXY AI RULES
+
+## CORE RULES
+
+- Do NOT refactor the whole project
+- Do NOT scan the whole repository
+- Do NOT rewrite architecture
+- Do NOT modify unrelated files
+- Do NOT change UI unless requested
+
+---
+
+## PRIORITY
+
+Current priority:
+
+1. Bug fixing
+2. Runtime stability
+3. Loading flow stability
+4. Prevent race conditions
+5. Prevent re-render storms
+
+NOT priority:
+
+- architecture rewrite
+- full refactor
+- folder restructuring
+
+---
+
+## ANALYSIS RULE
+
+Always:
+
+1. Analyze first
+2. Explain issue
+3. Then modify
+
+Never directly rewrite large systems.
+
+---
+
+## CONTEXT LIMIT
+
+Only analyze:
+
+- single feature
+- single folder
+- single runtime flow
+- single bug
+
+Avoid full project scanning.
+
+---
+
+## CURRENT STACK
+
+- Next.js App Router
+- TypeScript
+- TailwindCSS
+- Zustand
+- Framer Motion
+
+---
+
+## IMPORTANT
+
+AI acts as:
+
+- junior engineer
+- implementation assistant
+
+Human decides:
+
+- architecture
+- product logic
+- feature direction

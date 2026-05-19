@@ -12,14 +12,22 @@ import {
   evolveUniverse,
 } from "./universeEvolution";
 
+import { runtimeDebug } from "./runtimeDebug";
+
 export function useEmotionRuntime() {
   useEffect(() => {
     let frameId = 0;
+
+    let tickCount = 0;
 
     let lastUpdate =
       performance.now();
 
     const LOOP_INTERVAL = 120;
+
+    runtimeDebug(
+      "RUNTIME_START"
+    );
 
     const runtimeLoop = (
       now: number
@@ -38,6 +46,24 @@ export function useEmotionRuntime() {
 
         const store =
           useFluxStore.getState();
+
+        tickCount += 1;
+
+        if (
+          tickCount % 20 ===
+          0
+        ) {
+          runtimeDebug(
+            "RUNTIME_TICK",
+            {
+              tickCount,
+
+              atmosphere:
+                store.universe
+                  .atmosphere,
+            }
+          );
+        }
 
         /*
           runtime simulation
@@ -92,6 +118,10 @@ export function useEmotionRuntime() {
       );
 
     return () => {
+      runtimeDebug(
+        "RUNTIME_STOP"
+      );
+
       cancelAnimationFrame(
         frameId
       );
