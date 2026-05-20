@@ -24,9 +24,17 @@ import {
 } from "framer-motion";
 
 export default function FluxPage() {
-  runtimeDebug(
-    "PAGE_RENDER"
-  );
+  /*
+    prevent console spam
+    runtimeDebug on every render
+    was causing PAGE_RENDER flood
+  */
+
+  useEffect(() => {
+    runtimeDebug(
+      "PAGE_RENDER"
+    );
+  }, []);
 
   const {
     vector,
@@ -66,13 +74,18 @@ export default function FluxPage() {
         vector
       );
 
-    animate(
-      atmosphere,
-      totalEmotion,
-      {
-        duration: 1.2,
-      }
-    );
+    const controls =
+      animate(
+        atmosphere,
+        totalEmotion,
+        {
+          duration: 1.2,
+        }
+      );
+
+    return () => {
+      controls.stop();
+    };
   }, [
     vector,
     atmosphere,
@@ -97,14 +110,15 @@ export default function FluxPage() {
 
     flashLayer.set(0.55);
 
-    animate(
-      flashLayer,
-      0,
-      {
-        duration: 0.9,
-        ease: "easeOut",
-      }
-    );
+    const flashAnimation =
+      animate(
+        flashLayer,
+        0,
+        {
+          duration: 0.9,
+          ease: "easeOut",
+        }
+      );
 
     /*
       universe pulse burst
@@ -112,14 +126,15 @@ export default function FluxPage() {
 
     pulseBurst.set(1.24);
 
-    animate(
-      pulseBurst,
-      1,
-      {
-        duration: 1.4,
-        ease: "easeOut",
-      }
-    );
+    const pulseAnimation =
+      animate(
+        pulseBurst,
+        1,
+        {
+          duration: 1.4,
+          ease: "easeOut",
+        }
+      );
 
     /*
       shockwave explode
@@ -127,14 +142,15 @@ export default function FluxPage() {
 
     shockwaveBurst.set(1);
 
-    animate(
-      shockwaveBurst,
-      0,
-      {
-        duration: 1.8,
-        ease: "easeOut",
-      }
-    );
+    const shockwaveAnimation =
+      animate(
+        shockwaveBurst,
+        0,
+        {
+          duration: 1.8,
+          ease: "easeOut",
+        }
+      );
 
     /*
       particles response
@@ -142,14 +158,25 @@ export default function FluxPage() {
 
     particlesBoost.set(1);
 
-    animate(
-      particlesBoost,
-      0,
-      {
-        duration: 2.2,
-        ease: "easeOut",
-      }
-    );
+    const particleAnimation =
+      animate(
+        particlesBoost,
+        0,
+        {
+          duration: 2.2,
+          ease: "easeOut",
+        }
+      );
+
+    return () => {
+      flashAnimation.stop();
+
+      pulseAnimation.stop();
+
+      shockwaveAnimation.stop();
+
+      particleAnimation.stop();
+    };
   }, [
     universe.swipeImpulse,
     universe.universePulse,
@@ -214,7 +241,6 @@ export default function FluxPage() {
     );
 
   /*
-    NEW:
     fullscreen flash layer
   */
 
@@ -226,7 +252,6 @@ export default function FluxPage() {
     );
 
   /*
-    NEW:
     emotion shockwave
   */
 
@@ -247,7 +272,6 @@ export default function FluxPage() {
     );
 
   /*
-    NEW:
     breathing gradients
   */
 
@@ -621,8 +645,19 @@ export default function FluxPage() {
           pointer-events-none
         "
         style={{
-          backgroundImage:
-            "url('https://grainy-gradients.vercel.app/noise.svg')",
+          /*
+            removed broken external noise.svg
+            prevents 404 spam
+          */
+
+          backgroundImage: `
+            radial-gradient(
+              rgba(255,255,255,0.04) 0.7px,
+              transparent 0.7px
+            )
+          `,
+          backgroundSize:
+            "4px 4px",
         }}
       />
 
