@@ -1,36 +1,42 @@
-"use client";
-
-type RuntimeEvent =
-  | "RUNTIME_START"
-  | "RUNTIME_TICK"
-  | "RUNTIME_STOP"
-  | "HYDRATION_START"
-  | "HYDRATION_FINISH"
-  | "STORE_UPDATE"
-  | "UNIVERSE_EVENT"
-  | "VECTOR_UPDATE"
-  | "PAGE_RENDER";
-
-const ENABLE_DEBUG =
-  process.env.NODE_ENV ===
-  "development";
-
 export function runtimeDebug(
-  event: RuntimeEvent,
+  label: string,
   payload?: unknown
 ) {
+  /*
+    production safe
+  */
+
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+    return;
+  }
+
+  /*
+    enable debug
+  */
+
+  const ENABLE_DEBUG =
+    true;
+
   if (!ENABLE_DEBUG) {
     return;
   }
 
   const timestamp =
-    performance.now().toFixed(1);
+    new Date().toLocaleTimeString();
+
+  /*
+    grouped debug log
+  */
 
   console.log(
-    `%c[FLUXY:${event}]`,
-    "color:#a855f7;font-weight:bold",
+    `%c[FLUXY:${label}]`,
+    "color:#a855f7;font-weight:bold;",
     {
-      t: `${timestamp}ms`,
+      time: timestamp,
+
       payload,
     }
   );
